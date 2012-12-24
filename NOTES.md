@@ -18,3 +18,7 @@ into child repo:
 
     echo Gemfile.lock >> .git/info/exclude
 
+## Python
+
+    $PYTHON vendor/virtualenv/virtualenv.py vendor/root/
+    vendor/root/bin/pip install -r vendor/requirements.txt
