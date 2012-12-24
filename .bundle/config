@@ -1,0 +1,4 @@
+---
+BUNDLE_BIN: vendor/root/bin
+BUNDLE_PATH: vendor/root/lib/ruby/gems
+BUNDLE_DISABLE_SHARED_GEMS: '1'
