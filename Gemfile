@@ -14,3 +14,7 @@ group :development do
   gem "pry"
   gem "awesome_print"
 end
+
+# Local library path
+_lib_dir = File.join(File.dirname(__FILE__), 'lib')
+$:.unshift(_lib_dir) unless $:.include?(_lib_dir)
