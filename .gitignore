@@ -3,3 +3,4 @@
 .rvmrc
 /vendor/root
 *.pyc
+/doc/_build
