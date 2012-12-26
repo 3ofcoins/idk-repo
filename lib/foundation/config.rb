@@ -12,19 +12,33 @@ module Foundation
       c[:domain] = 'example.com'
     end
 
-    def self.from_file(filename)
-      super
-      self[:username] ||=
-        Net::SSH::Config.for(self[:domain])[:user] ||
-        Etc.getlogin
-      self
-    end
-
     def self.path(relative_pathname)
       File.join(self[:root_dir], relative_pathname)
     end
 
+    # Return array of config files present in the repository:
+    # - config/basnename.ext
+    # - config/basename-*.ext,
+    # - .chef/basename.ext
+    # - .chef/basename-*.ext
+    def self.config_files(basename, ext='.rb')
+      patterns = [ "config/#{basename}#{ext}",
+                   "config/#{basename}-*#{ext}",
+                   ".chef/#{basename}-*#{ext}" ]
+      Dir[ *patterns.map { |fp| path(fp) } ]
+    end
+
+    def self.load!
+      config_files('foundation').each { |cf| from_file(cf) }
+
+      self[:username] ||=
+        Net::SSH::Config.for(self[:domain])[:user] ||
+        Etc.getlogin
+
+      nil
+    end
+
     # Load default configuration automagically
-    self.from_file(File.join(self[:root_dir], 'config', 'foundation.rb'))
+    self.load!
   end
 end
