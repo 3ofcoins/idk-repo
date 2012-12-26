@@ -17,13 +17,9 @@ class Repo < Thor
 
     run "vendor/root/bin/pip install -q -r vendor/requirements.txt"
 
-    empty_directory '.chef'
-    chmod '.chef', 0700
-
-    create_link '.chef/knife.rb', '../config/knife.rb', :force => true
+    create_link '.chef/knife.rb', '../lib/config/knife.rb', :force => true
     # create_link '.chef/plugins/knife', '../../lib/knife', :force => true
 
-    say_status :chmod, 'og-rwx .chef .chef/*'
     chmod '.chef', 0700, :verbose => false
     inside '.chef' do
       Dir['*.pem', '*.secret', '*.rb'].each do |f|
