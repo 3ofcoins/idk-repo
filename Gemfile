@@ -10,6 +10,10 @@ git "git://github.com/3ofcoins/vendorificator.git", :ref => '12ba6670e0dc3f15c8e
   gem "vendorificator"
 end
 
+# Needed by code in lib/ - probably better in a gemspec
+gem "mixlib-config"
+gem "net-ssh"
+
 group :development do
   gem "pry"
   gem "awesome_print"
