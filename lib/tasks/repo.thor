@@ -5,7 +5,9 @@ class Repo < Thor
 
   desc :setup, "Initialize the repository"
   method_option :python, :default => "python"
+  method_option :clean, :aliases => '-c', :type => :boolean, :default => false
   def setup
+    thor('repo:clean') if options[:clean]
 
     if File.exists? 'vendor/root/bin/python'
       say_status :exists, 'Python virtualenv', :green
