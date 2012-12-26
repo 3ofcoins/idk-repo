@@ -6,6 +6,7 @@ class Repo < Thor
   desc :setup, "Initialize the repository"
   method_option :python, :default => "python"
   def setup
+
     if File.exists? 'vendor/root/bin/python'
       say_status :exists, 'Python virtualenv', :green
     else
@@ -13,11 +14,26 @@ class Repo < Thor
     end
 
     run "vendor/root/bin/pip install -r vendor/requirements.txt"
+
+    empty_directory '.chef'
+    chmod '.chef', 0700
+
+    create_link '.chef/knife.rb', '../config/knife.rb', :force => true
+    # create_link '.chef/plugins/knife', '../../lib/knife', :force => true
+
+    say_status :chmod, 'og-rwx .chef .chef/*'
+    chmod '.chef', 0700, :verbose => false
+    inside '.chef' do
+      Dir['*.pem', '*.secret', '*.rb'].each do |f|
+        chmod f, 0600, :verbose => false
+      end
+    end
   end
 
   desc :clean, "Clean the repository"
   def clean
     remove_dir "vendor/root"
+    remove_dir ".chef"
   end
 
 end
