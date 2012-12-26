@@ -4,3 +4,4 @@
 /vendor/root
 *.pyc
 /doc/_build
+/.chef
