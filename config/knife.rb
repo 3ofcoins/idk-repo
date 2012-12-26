@@ -28,7 +28,7 @@ knife[:ssh_user] = _cfg[:username]
 knife[:distro] = 'chef-full'
 
 Dir[ File.join(_cfg[:root_dir], 'config', 'knife-*.rb'),
-     File.join(_cfg[:root_dir], '.chef',  'knife-*.rb') ].each do |config_path|
+     File.join(_cfg[:root_dir], '.chef',  'knife*.rb') ].each do |config_path|
   begin
     # Suppress redefined constant warnings - this may be loaded
     # multiple times via Ginza::Cloud
