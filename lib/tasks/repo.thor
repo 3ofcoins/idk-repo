@@ -15,7 +15,7 @@ class Repo < Thor
       run "#{options[:python]} vendor/virtualenv/virtualenv.py vendor/root"
     end
 
-    run "vendor/root/bin/pip install -r vendor/requirements.txt"
+    run "vendor/root/bin/pip install -q -r vendor/requirements.txt"
 
     empty_directory '.chef'
     chmod '.chef', 0700
