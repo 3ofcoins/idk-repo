@@ -32,7 +32,7 @@ module Foundation
       config_files('foundation').each { |cf| from_file(cf) }
 
       self[:username] ||=
-        Net::SSH::Config.for(self[:domain])[:user] ||
+        Net::SSH::Config.for("whatever.i.#{self[:domain]}")[:user] ||
         Etc.getlogin
 
       nil
