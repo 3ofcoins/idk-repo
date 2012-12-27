@@ -20,7 +20,7 @@ if _cfg[:opscode_organization]
   validation_key           _cfg.path(".chef/#{_cfg[:opscode_organization]}-validator.pem")
   chef_server_url          "https://api.opscode.com/organizations/#{_cfg[:opscode_organization]}"
 else
-  node_name                _cfg[:username]
+  node_name                _cfg[:chef_username] || _cfg[:username]
   client_key               _cfg.path('.chef/client.pem')
   validation_client_name   "chef-validator"
   validation_key           _cfg.path(".chef/validation.pem")
