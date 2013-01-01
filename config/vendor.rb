@@ -6,5 +6,6 @@ archive :virtualenv,
   FileUtils::rm_rf Dir.entries('.')-%w|.. . AUTHORS.txt LICENSE.txt README.rst virtualenv.py|
 end
 
+chef_cookbook 'build-essential'
 chef_cookbook 'chef-server'
 chef_cookbook 'ruby'
