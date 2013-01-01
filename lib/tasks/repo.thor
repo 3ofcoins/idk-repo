@@ -34,4 +34,25 @@ class Repo < Thor
     remove_dir ".chef"
   end
 
+  desc :upload, "Upload everything to the Chef server"
+  def upload
+    knife 'cookbook upload', '--all'
+
+    Dir['roles/*.rb', 'roles/*.json'].each do |f|
+      knife 'role from file', f
+    end
+
+    Dir['environments/*.rb', 'environments/*.json'].each do |f|
+      knife 'environment from file', f
+    end
+
+    knife 'data', 'bag', 'from', 'file', '--all'
+  end
+
+  no_tasks do
+    def knife(command, *args)
+      say_status :knife, "#{command} #{args.join(' ')}"
+      system 'knife', *(command.split), *args
+    end
+  end
 end

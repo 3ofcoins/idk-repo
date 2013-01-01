@@ -10,6 +10,7 @@ module Foundation
     configure do |c|
       c[:root_dir] = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
       c[:domain] = 'example.com'
+      c[:vm] = { :chef => { :ip => '192.168.23.5' } }
     end
 
     def self.path(relative_pathname)
