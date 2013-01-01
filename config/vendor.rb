@@ -7,3 +7,4 @@ archive :virtualenv,
 end
 
 chef_cookbook 'chef-server'
+chef_cookbook 'ruby'
