@@ -6,7 +6,7 @@ gem "thor"
 gem "foodcritic"
 gem "vagrant"
 gem "strainer"
-git "git://github.com/3ofcoins/vendorificator.git", :ref => '12ba6670e0dc3f15c8e639c911d04532a6733960' do
+git "git://github.com/3ofcoins/vendorificator.git", :ref => '0cf94bcfee46f8a5415a2a771fc2ade0da08a5f9' do
   gem "vendorificator"
 end
 
