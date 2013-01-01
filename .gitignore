@@ -5,3 +5,4 @@
 *.pyc
 /doc/_build
 /.chef
+/.vagrant
