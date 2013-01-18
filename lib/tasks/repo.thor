@@ -47,7 +47,7 @@ class Repo < Thor
     end
 
     Dir['data_bags/*'].select { |d| File.directory?(d) }.each do |d|
-      knife 'data bag create', d
+      knife 'data bag create', File.basename(d)
     end
 
     knife 'data', 'bag', 'from', 'file', '--all'
