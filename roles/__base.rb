@@ -1,5 +1,5 @@
-name "base"
-description "Base role applied to all nodes."
+name "__base"
+description "Base role applied to all nodes. It should be included in the base role of a concrete deployment."
 
 run_list( 'recipe[apt]',
           'recipe[omnibus_updater]' )
