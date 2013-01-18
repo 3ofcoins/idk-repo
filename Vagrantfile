@@ -1,7 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require 'foundation/config'
+libdir = File.expand_path(File.join(File.dirname(__FILE__), 'lib'))
+$:.unshift(libdir) unless $:.include?(libdir)
+
+require 'foundation/vagrant_config'
 
 Vagrant::Config.run do |config|
   config.vm.box = "precise64"

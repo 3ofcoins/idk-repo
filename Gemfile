@@ -4,7 +4,6 @@ gem "chef"
 gem "knife-dwim"
 gem "thor"
 gem "foodcritic"
-gem "vagrant"
 gem "strainer"
 git "git://github.com/3ofcoins/vendorificator.git", :ref => '4b7a6eaac56ab69f70f897591de6f6748c1ba4bc' do
   gem "vendorificator"
