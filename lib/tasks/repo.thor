@@ -46,6 +46,10 @@ class Repo < Thor
       knife 'environment from file', f
     end
 
+    Dir['data_bags/*'].select { |d| File.directory?(d) }.each do |d|
+      knife 'data bag create', d
+    end
+
     knife 'data', 'bag', 'from', 'file', '--all'
   end
 
