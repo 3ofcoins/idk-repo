@@ -9,3 +9,4 @@ end
 chef_cookbook 'build-essential'
 chef_cookbook 'chef-server'
 chef_cookbook 'ruby'
+chef_cookbook 'omnibus_updater'
