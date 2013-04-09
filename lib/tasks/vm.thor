@@ -9,11 +9,11 @@ class VM < Thor
   method_option :force, :aliases => '-f', :type => :boolean, :default => false
   def up
     run "vagrant up chef"
-    %w(validation.pem webui.pem).each do |pem|
+    %w(validator.pem webui.pem).each do |pem|
       pem_path = Foundation::Config.path(".chef/vm.#{pem}")
       if !File.exist?(pem_path) || options[:force]
         create_file pem_path do
-          run "vagrant ssh chef -c 'sudo cat /etc/chef/#{pem}'", :capture => true
+          run "vagrant ssh chef -c 'sudo cat /etc/chef-server/chef-#{pem}'", :capture => true
         end
       else
         say_status :exists, relative_to_original_destination_root(pem_path), :blue
