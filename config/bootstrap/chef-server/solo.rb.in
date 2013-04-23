@@ -1,0 +1,22 @@
+require 'fileutils'
+
+module ::Local
+  BOOTSTRAP_DIR   = File.expand_path File.dirname __FILE__
+  FOUNDATION_ROOT = File.expand_path File.join BOOTSTRAP_DIR, '../../..'
+
+  def self.b_dir(*path)
+    File.join(BOOTSTRAP_DIR,   *path)
+  end
+
+  def self.f_dir(*path)
+    File.join(FOUNDATION_ROOT, *path)
+  end
+end
+
+cookbook_path   [ ::Local.f_dir('cookbooks'),
+                  ::Local.f_dir('vendor/cookbooks') ]
+role_path       ::Local.f_dir('roles')
+file_cache_path ::Local.b_dir('files')
+lockfile        '/var/lock/chef-solo.lock'
+
+::FileUtils.mkdir_p file_cache_path

@@ -1,0 +1,15 @@
+dnl -*- autoconf -*-
+m4_include([../bootstrap.m4])
+FB_NEED_ROOT
+FB_ARG_FQDN
+
+FB_TRY_PROG( [curl], [FB_INSTALL([curl])] )
+FB_TRY_PROG( [bash], [FB_INSTALL([bash])] )
+FB_TRY_PROG( [chef-solo], 
+  [FB_RUN( [omnibus-chef.install],
+           [curl -L https://www.opscode.com/chef/install.sh | bash])])
+
+AC_CONFIG_FILES([solo.rb dna.json])
+FB_RUN([chef-solo], [chef-solo -c solo.rb -j dna.json])
+
+AC_OUTPUT
