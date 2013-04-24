@@ -2,14 +2,13 @@ require 'fileutils'
 
 module ::Local
   BOOTSTRAP_DIR   = File.expand_path File.dirname __FILE__
-  FOUNDATION_ROOT = File.expand_path '@FOUNDATION_ROOT@'
 
   def self.b_dir(*path)
     File.join(BOOTSTRAP_DIR,   *path)
   end
 
   def self.f_dir(*path)
-    File.join(FOUNDATION_ROOT, *path)
+    File.join('@FOUNDATION_ROOT@', *path)
   end
 end
 
