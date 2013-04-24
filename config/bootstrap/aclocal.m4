@@ -4,13 +4,12 @@ m4_define([FB_INIT], [
   AC_PREREQ([2.69])
   AC_INIT([foundation], [m4_chomp(m4_esyscmd([git describe]))])
   AC_REVISION([m4_chomp(m4_esyscmd([git describe --long]))])
-  _FB_INIT_HELP
+  _FB_INIT_HELP ])
 
-])
-
-m4_define([_FB_INIT_HELP], [
-  m4_cleardivert([HELP_BEGIN])
-  m4_divert_push([HELP_BEGIN])
+m4_define([_FB_INIT_HELP],
+ [ AC_PRESERVE_HELP_ORDER
+   m4_cleardivert([HELP_BEGIN])
+   m4_divert_push([HELP_BEGIN])
 if test "$ac_init_help" = "long"; then
     cat <<_ACEOF
 \`$[0]' configures m4_ifset([AC_PACKAGE_STRING],
@@ -36,6 +35,13 @@ Configuration:
 ]
 m4_divert_pop([HELP_BEGIN])])
 
+AC_DEFUN( [FB_ARG_VAR],
+  [ AC_ARG_VAR([$1], [$2])
+    m4_ifnblank([$3],
+      [AS_IF( [AS_VAR_TEST_SET([$1])],
+              [],
+              [AC_SUBST([$1], [$3])])])])
+
 AC_DEFUN( [_FB_IF_DRY],
   [AS_IF( [AS_VAR_TEST_SET([DRY_RUN])], [$1], [$2])])
 
@@ -59,10 +65,6 @@ AC_DEFUN([FB_TRY_PROG],[
 
 AC_DEFUN([FB_INSTALL],
   [ FB_RUN([install.package.$1], [apt-get install --yes $1]) ])
-
-AC_DEFUN([FB_ARG_FQDN],
-  [ AC_ARG_VAR([FQDN], [Desired Fully Qualified Domain Name of the host])
-    AS_IF( [AS_VAR_TEST_SET([FQDN])], [], [AC_SUBST([FQDN],[`hostname -f`])]) ])
 
 AC_DEFUN([FB_FILE],
   [ cat > $srcdir/AS_ESCAPE([$1]) <<EOF
