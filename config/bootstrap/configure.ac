@@ -12,7 +12,7 @@ FB_TRY_PROG( [chef-solo],
     FB_TRY_PROG([bash], [FB_INSTALL([bash])])
     FB_RUN( [curl -L https://www.opscode.com/chef/install.sh | bash] )])
 
-dnl Install chef server when asked
+dnl Install chef server when asked to
 AC_ARG_WITH([chef-server],
   [AS_HELP_STRING([--with-chef-server[[=VERSION]]], [Bootstrap a Chef server])],
   [], [with_chef_server=no])
