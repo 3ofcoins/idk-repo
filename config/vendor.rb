@@ -10,6 +10,7 @@ chef_cookbook 'build-essential'
 chef_cookbook 'ruby'
 chef_cookbook 'omnibus_updater'
 chef_cookbook 'hostname'
+chef_cookbook 'chef-client'
 
 class <<  git 'git://github.com/opscode-cookbooks/chef-server.git',
               :branch => 'master',
