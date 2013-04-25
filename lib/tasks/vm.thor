@@ -32,6 +32,12 @@ class VM < Thor
     knife 'status'
   end
 
+  desc :destroy, "Bring down the VM environment"
+  def destroy
+    run "vagrant destroy -f"
+    Dir['.chef/vm.*.pem'].each { |f| remove_file f }
+  end
+
   desc :knife, 'Run a Knife command against VM setup'
   def knife(command, *args)
     say_status :knife, "#{command} #{args.join(' ')}"

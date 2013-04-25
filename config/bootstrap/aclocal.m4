@@ -78,7 +78,7 @@ dnl
 dnl AC_CONFIG_FILES is used later to generate bootstrap.sh, so COMMAND
 dnl may include @SUBSTITUTIONS@.
 AC_DEFUN([FB_RUN], [
-AS_ECHO(["AS_ESCAPE([$1], ['\"])"]) >> ./bootstrap.sh.in.tmp
+AS_ECHO(["AS_ESCAPE([$1], [\"])"]) >> ./bootstrap.sh.in.tmp
 ])dnl FB_RUN
 
 dnl FB_ARG_VAR(VARNAME, DOCUMENTATION, DEFAULT)

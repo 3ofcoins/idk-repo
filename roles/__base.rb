@@ -6,7 +6,6 @@ run_list( 'recipe[apt]',
 
 default_attributes(
   :omnibus_updater => {
-    :version => '10.18.0',
-    :remove_chef_system_gem => true, # This should be overriden to
-                                     # false in the chef server
+    :version => '11.4.4',
+    :remove_chef_system_gem => true,
     :cache_dir => '/var/cache/chef' })
