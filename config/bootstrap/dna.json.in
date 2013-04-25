@@ -1,8 +1,7 @@
 {
-  "run_list": [ "recipe[hostname]", "recipe[chef-server]" ],
-  "set_fqdn": "@FQDN@",
+  "run_list": [ "recipe[chef-server]" ],
   "chef-server": {
-    "api_fqdn": "@FQDN@",
+    "api_fqdn": "@SERVER_FQDN@",
     "configuration": {
       "chef_server_webui": { "enable": false }
     }

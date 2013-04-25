@@ -28,7 +28,7 @@ class VM < Thor
     knife 'status'
 
     knife "node run list add chef role[__base]"
-    run "vagrant ssh chef -c 'sudo chef-client -S https://localhost'"
+    run "vagrant ssh chef -c 'sudo chef-client -S https://localhost/ -N chef'"
     run 'vagrant up node'
   end
 
