@@ -1,9 +1,7 @@
 /dna.json
-/dna.json.in
 /solo.rb
-/solo.rb.in
 /files
 /autom4te.cache
 /config.log
 /config.status
-bootstrap.sh
+/bootstrap.sh

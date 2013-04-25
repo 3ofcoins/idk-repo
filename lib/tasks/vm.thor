@@ -11,12 +11,8 @@ class VM < Thor
     run "vagrant up chef"
     %w(validator.pem webui.pem).each do |pem|
       pem_path = Foundation::Config.path(".chef/vm.#{pem}")
-      if !File.exist?(pem_path) || options[:force]
-        create_file pem_path do
-          run "vagrant ssh chef -c 'sudo cat /etc/chef-server/chef-#{pem}'", :capture => true
-        end
-      else
-        say_status :exists, relative_to_original_destination_root(pem_path), :blue
+      create_file pem_path do
+        run "vagrant ssh chef -c 'sudo cat /etc/chef-server/chef-#{pem}'", :capture => true
       end
     end
 
@@ -30,6 +26,10 @@ class VM < Thor
     with_vm_chef_server { thor 'repo:upload' }
 
     knife 'status'
+
+    knife "node run list add chef role[__base]"
+    run "vagrant ssh chef -c 'sudo chef-client -S https://localhost'"
+    run 'vagrant up node'
   end
 
   desc :destroy, "Bring down the VM environment"
