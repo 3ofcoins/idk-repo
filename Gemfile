@@ -1,13 +1,15 @@
-source :rubygems
+source "https://rubygems.org/"
 
-gem "chef"
+gem "chef", "~> 11.4.0"
 gem "knife-dwim"
 gem "thor"
 gem "foodcritic"
 gem "strainer"
-git "git://github.com/3ofcoins/vendorificator.git", :ref => '4b7a6eaac56ab69f70f897591de6f6748c1ba4bc' do
-  gem "vendorificator"
-end
+gem "vendorificator"
+
+gem "omnibus",
+    :git => "git://github.com/opscode/omnibus-ruby.git",
+    :branch => 'master'
 
 # Needed by code in lib/ - probably better in a gemspec
 gem "mixlib-config"

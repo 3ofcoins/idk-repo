@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e -x
+@INSTALL_PREREQS@
+@INSTALL_CLIENT@
+@CONFIGURE_SYSTEM@
+
+@MKDIR_P@ /etc/chef
+/opt/chef/embedded/bin/ruby -rjson \
+    -e 'puts JSON.dump(run_list: ARGV.first.split)' -- '@RUN_LIST@' \
+    > /etc/chef/first_boot.json
+exec chef-client -j /etc/chef/first_boot.json @CHEF_CLIENT_ARGS@

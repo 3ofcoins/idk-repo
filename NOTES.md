@@ -11,6 +11,13 @@
 - Python (for Sphinx)
 - LaTeX (for Sphinx & PDF docs)
 
+# Issues
+
+## Vagrant gems needed
+
+ - mixlib-config
+ - vagrant-hostmaster
+
 # Development
 
 Ignore Gemfile.lock without pushing it globally and having it merged

@@ -7,6 +7,13 @@ archive :virtualenv,
 end
 
 chef_cookbook 'build-essential'
-chef_cookbook 'chef-server'
 chef_cookbook 'ruby'
 chef_cookbook 'omnibus_updater'
+chef_cookbook 'hostname'
+
+class <<  git 'git://github.com/opscode-cookbooks/chef-server.git',
+              :branch => 'master',
+              :category => :cookbooks,
+              :version => '2.0.0pre20130225'
+  include Vendorificator::Hooks::ChefCookbookDependencies
+end

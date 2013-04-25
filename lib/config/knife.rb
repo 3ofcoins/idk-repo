@@ -11,14 +11,14 @@ require 'foundation/config'
 _cfg = Foundation::Config
 
 # Default configuration
-log_level                :info
+log_level                :debug
 log_location             STDOUT
 if ENV['VM_CHEF_SERVER']
   node_name                'chef-user'
   client_key               _cfg.path(".chef/vm.client.pem")
   validation_client_name   "chef-validator"
-  validation_key           _cfg.path(".chef/vm.validation.pem")
-  chef_server_url          "http://#{_cfg[:vm][:chef][:ip]}:4000"
+  validation_key           _cfg.path(".chef/vm.validator.pem")
+  chef_server_url          "https://#{_cfg[:vm][:chef][:ip]}"
 elsif _cfg[:opscode_organization]
   node_name                _cfg[:opscode_username] || _cfg[:chef_username] || _cfg[:username]
   client_key               _cfg.path(".chef/#{node_name}.pem")
