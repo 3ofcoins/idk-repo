@@ -7,9 +7,7 @@ gem "foodcritic"
 gem "strainer"
 gem "vendorificator"
 
-gem "omnibus",
-    :git => "git://github.com/opscode/omnibus-ruby.git",
-    :branch => 'master'
+gem "omnibus", "~> 1.0.0"
 
 # Needed by code in lib/ - probably better in a gemspec
 gem "mixlib-config"
