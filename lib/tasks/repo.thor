@@ -9,13 +9,13 @@ class Repo < Thor
   def setup
     thor('repo:clean') if options[:clean]
 
-    if File.exists? 'vendor/root/bin/python'
+    if File.exists? 'inst/bin/python'
       say_status :exists, 'Python virtualenv', :green
     else
-      run "#{options[:python]} vendor/virtualenv/virtualenv.py vendor/root"
+      run "#{options[:python]} vendor/virtualenv/virtualenv.py inst"
     end
 
-    run "vendor/root/bin/pip install -q -r vendor/requirements.txt"
+    run "inst/bin/pip install -q -r vendor/requirements.txt"
 
     create_link '.chef/knife.rb', '../lib/config/knife.rb', :force => true
     # create_link '.chef/plugins/knife', '../../lib/knife', :force => true
@@ -30,7 +30,7 @@ class Repo < Thor
 
   desc :clean, "Clean the repository"
   def clean
-    remove_dir "vendor/root"
+    remove_dir "inst"
     remove_dir ".chef"
   end
 

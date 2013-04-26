@@ -1,10 +1,10 @@
 *~
 .rake_test_cache
 .rvmrc
-/vendor/root
 *.pyc
 /doc/_build
 /.chef
 /.vagrant
 /tmp
 /cache
+/inst
