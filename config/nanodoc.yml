@@ -1,0 +1,6 @@
+output_dir: inst/public
+ignore:
+  - "/**/metadata.json"
+  - "/config/bootstrap/configure"
+  - "/Gemfile.lock"
+  - "/config/nanoc/static"
