@@ -1,9 +1,10 @@
 #!/bin/sh
 set -e
 
+basedir=`dirname $0`
 command=$1
 shift
-cd `dirname $0`
+export PATH=$basedir/bin:$PATH
 
 case $command in
     help)
@@ -17,14 +18,14 @@ Known tasks:
   bootstrap -- (re)initializes the repository; safe to run multiple times
 
 EOF
-        if [ -d inst/bin ] ; then
+        if [ -d $basedir/inst/bin ] ; then
             echo 'Installed commands:'
-            ls -C inst/bin | expand | sed 's/^/  /'
+            ls -C $basedir/inst/bin | expand | sed 's/^/  /'
 
             echo
-            if [ -x inst/bin/thor ] ; then
+            if [ -x $basedir/inst/bin/thor ] ; then
                 echo 'Thor tasks:'
-                ./inst/bin/thor list | grep '^thor ' | sed 's/^thor /  /'
+                $basedir/inst/bin/thor list | grep '^thor ' | sed 's/^thor /  /'
             else
                 echo "Thor doesn't seem to be installed, run \`$0 bootstrap'."
             fi
@@ -37,6 +38,7 @@ EOF
         exec bundle exec thor repo:setup
         ;;
     *)
-        [ -f ./inst/bin/$command   ] && exec ./inst/bin/$command "${@}"
-        exec ./inst/bin/thor $command "${@}"
+        [ -f $basedir//inst/bin/$command ] \
+            && exec $basedir//inst/bin/$command "${@}"
+        exec $basedir//inst/bin/thor $command "${@}"
 esac

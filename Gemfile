@@ -17,6 +17,9 @@ gem "net-ssh"
 
 group :development do
   gem "pry"
+  gem "pry-debugger"
+  gem "pry-rescue"
+  gem "pry-stack_explorer"
   gem "awesome_print"
 end
 
