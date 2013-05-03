@@ -9,7 +9,7 @@ gem "vendorificator"
 
 gem "omnibus", "~> 1.0.0"
 
-gem "nanodoc", :path => "/Users/japhy/Projekty/nanodoc"
+gem "nanodoc", :git => "git@github.com:3ofcoins/nanodoc.git"
 
 # Needed by code in lib/ - probably better in a gemspec
 gem "mixlib-config"
