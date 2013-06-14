@@ -1,0 +1,18 @@
+---
+:vendorificator_version: 0.3.0
+:current_branch: true
+:current_sha: true
+:git_describe: true
+:module_version: 2013-06-14-183107c
+:module_category:
+:module_name: cookbooks
+:unparsed_args:
+  :path: cookbooks
+  :specs: &1
+  - Berksfile
+  - Berksfile.lock
+  :command: berks install --path vendor/cookbooks
+:parsed_args:
+  :path: cookbooks
+  :specs: *1
+  :command: berks install --path vendor/cookbooks
