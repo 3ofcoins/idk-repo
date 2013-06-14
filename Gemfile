@@ -5,9 +5,13 @@ gem "knife-dwim"
 gem "thor"
 gem "foodcritic"
 gem "strainer"
-gem "vendorificator"
 
-gem "omnibus", "~> 1.0.0"
+gem "vendorificator",
+    :git => 'git://github.com/3ofcoins/vendorificator.git',
+    :branch => 'develop'
+gem "berkshelf"
+
+gem "omnibus", "~> 1.1.0"
 
 gem "nanodoc", :git => "git@github.com:3ofcoins/nanodoc.git"
 
