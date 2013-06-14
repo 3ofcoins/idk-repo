@@ -1,11 +1,10 @@
 *~
 .rake_test_cache
-.rvmrc
 *.pyc
 /doc/_build
 /.chef
 /.vagrant
 /tmp
 /cache
-/inst
 .DS_Store
+/.kitchen

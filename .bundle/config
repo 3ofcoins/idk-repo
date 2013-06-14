@@ -1,4 +1,0 @@
----
-BUNDLE_BIN: inst/bin
-BUNDLE_PATH: inst/gems
-BUNDLE_DISABLE_SHARED_GEMS: '1'
