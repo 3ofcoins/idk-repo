@@ -26,12 +26,16 @@ What you need
  - Git
  - Ruby 1.9.3 with Rubygems and Bundler (rvm or rbenv is recommended)
  - VirtualBox and Vagrant
- - Python 2.6+ (to generate Sphinx documentation)
+ - [Pygments](http://pygments.org/)
  - C development environment (to install some of Ruby and Python packages)
  - GNU Autoconf 2.69+ (optional, to regenerate bootstrap configuration
    script if needed)
 
-Once you have these, run `./do bootstrap` to install all the software.
+Once you have these, run the following commands to install all the
+software:
+
+    $ bundle install
+    $ bundle exec thor repo:setup
 
 > This is supposed to get easier over time, as we figure out how to
 > automate installation of the prerequisites.
