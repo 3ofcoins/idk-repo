@@ -26,7 +26,7 @@ What you need
  - Git
  - Ruby 1.9.3 with Rubygems and Bundler (rvm or rbenv is recommended)
  - VirtualBox and Vagrant
- - [Pygments](http://pygments.org/)
+ - [Pygments](http://pygments.org/) (optional, to regenerate documentation)
  - C development environment (to install some of Ruby and Python packages)
  - GNU Autoconf 2.69+ (optional, to regenerate bootstrap configuration
    script if needed)
