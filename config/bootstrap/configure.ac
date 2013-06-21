@@ -1,7 +1,7 @@
 dnl -*- autoconf -*-
 FB_INIT
 
-FB_ARG_VAR([NODE_NAME],       [Chef node name])
+FB_ARG_VAR([NAME],            [Chef node name])
 FB_ARG_VAR([CHEF_SERVER_URL], [Chef server URL]) dnl default depends on --with-chef-server
 FB_ARG_VAR([RUN_LIST],        [Node's run list])
 FB_ARG_VAR([SERVER_FQDN],     [FQDN or IP of the Chef server], [`hostname -f`])
