@@ -2,6 +2,7 @@
 
 site :opscode
 
+cookbook 'apt'
 cookbook 'build-essential'
 cookbook 'ruby'
 cookbook 'omnibus_updater'
