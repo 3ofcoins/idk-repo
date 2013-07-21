@@ -6,6 +6,9 @@
 ## you want to commit it into repository, or .chef/knife-whatever.rb
 ## if it's a secret (say, AWS access keys).
 
+_lib_dir = File.realpath(File.dirname(File.dirname(File.realpath(__FILE__))))
+$:.unshift(_lib_dir) unless $:.include?(_lib_dir)
+
 # Load Foundation configuration
 require 'foundation/config'
 _cfg = Foundation::Config
