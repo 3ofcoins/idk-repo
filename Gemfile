@@ -1,16 +1,5 @@
 source "https://rubygems.org/"
 
-gem "chef", "~> 11.4.0"
-gem "knife-dwim"
-gem "thor"
-gem "foodcritic"
-gem "strainer"
-
-gem "vendorificator",
-    :git => 'git://github.com/3ofcoins/vendorificator.git',
-    :branch => 'develop'
-gem "berkshelf"
-
 gem "omnibus", "~> 1.1.0"
 
 gem "nanodoc", :git => "git@github.com:3ofcoins/nanodoc.git"
