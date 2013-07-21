@@ -39,7 +39,6 @@ cookbook_path            [ _cfg.path('cookbooks'),
                            _cfg.path('vendor/cookbooks') ]
 verbosity                0
 
-knife[:ssh_user] = _cfg[:username]
 knife[:distro] = 'chef-full'
 
 # Load custom configuration
