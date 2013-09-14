@@ -1,0 +1,303 @@
+username = ENV['OPSCODE_USER'] || ENV['USER']
+chef_base = ENV['CHEF_REPO'] || File.expand_path(File.dirname(__FILE__))
+default_gw = ENV['DEFAULT_GATEWAY']
+default_gw ||= %x{ip route show}.split("\n").detect{|l|l.include?('default')}.to_s.scan(/\d+\.\d+\.\d+\.\d+/).first if File.exists?('/bin/ip')
+server_url = ENV['CHEF_SERVER_URL']
+validation_key = ENV['CHEF_VALIDATION_KEY']
+client_name = ENV['CHEF_CLIENT_NAME']
+share_dir = ENV['CHEF_SHARE_DIR'] = '/tmp/chef_share'
+default_run_list = ENV['CHEF_DEFAULT_RUNLIST'] ? ENV['CHEF_DEFAULT_RUNLIST'].split(',') : %w(role[base])
+if(File.exists?(c = File.join(chef_base, '.chef', 'knife.rb')))
+  conf_file = File.readlines(c)
+  server_url = conf_file.detect{|l|l.include?('chef_server_url')}.to_s.split(' ').last.gsub(/["']/, '') unless server_url
+  client_name = conf_file.detect{|l|l.include?('validation_client_name')}.to_s.split(' ').last.gsub(/["']/, '') unless client_name
+  validation_key = File.join(chef_base, '.chef', File.basename(conf_file.detect{|l|l.include?('validation_key')}.to_s.split(' ').last.gsub(/["']/, ''))) unless validation_key
+end
+
+Dir.mkdir(share_dir) unless File.directory?(share_dir)
+
+node_config = lambda do |config, args|
+  args ||= {}
+  if(ENV['NO_GW'].to_s == 'true')
+    set_default_gw = '/bin/true'
+  else
+    set_default_gw = "route add default gw #{default_gw}"
+  end
+  if(ENV['DO_APT'].to_s == 'true')
+    do_apt_update = 'apt-get update'
+  else
+    do_apt_update = '/bin/true'
+  end
+  if(args[:box_url])
+    config.vm.box_url = args[:box_url]
+  else
+    config.vm.box_url = 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+  end
+  if(args[:box])
+    config.vm.box = args[:box]
+  else
+    config.vm.box = File.basename(config.vm.box_url).sub('.box', '')
+  end
+  config.vm.customize do |vm|
+    vm.memory_size = 1024
+  end
+  if(args[:intnet])
+    #config.vm.network :intnet, args[:intnet], :adapter => 3
+  end
+
+    coms = ["/etc/init.d/ntp stop; ntpdate pool.ntp.org;"]
+  
+  if(ENV['CHEF'])
+    version = ENV['CHEF'].match(/^\d+/) ? ENV['CHEF'] : nil
+    coms << "which apt-get > /dev/null 2>&1 && apt-get install curl --quiet --yes"
+    coms << "which yum > /dev/null 2>&1 && yum install curl -y"
+    coms << "curl -# -L http://www.opscode.com/chef/install.sh | sudo bash -s -- #{version ? "-v #{version}" : ''}"
+    coms << "/opt/chef/embedded/bin/gem list pry | grep pry || /opt/chef/embedded/bin/gem install pry --no-ri --no-rdoc"
+  end
+  
+  config.vm.provision :shell do |shell|
+    shell.inline = coms.join("\n")
+  end
+
+=begin  
+  config.vm.provision :shell do |shell|
+    shell.inline = "/etc/init.d/ntp stop; ntpdate pool.ntp.org; #{set_default_gw}; #{do_apt_update}"
+  end
+=end
+  config.vm.share_folder('v-data', '/vagrant_data', share_dir)
+  config.vm.network :bridged
+  config.vm.network :bridged, :adapter => 3
+  config.vm.host_name = args[:hostname] || args[:node_name].split('.').first
+  config.vm.provision :chef_client do |chef|
+    chef.chef_server_url = server_url
+    chef.validation_key_path = validation_key
+    chef.validation_client_name = client_name
+    chef.node_name = args[:node_name]
+    chef.run_list = args[:run_list] || default_run_list
+  end
+end
+
+Vagrant::Config.run do |config|
+  config.vm.define :precise do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "precise.#{username}",
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :preciselxc do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "preciselxc.#{username}",
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+
+  config.vm.define :rcmon do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "rcmon.#{username}",
+      :run_list => %w(role[rc_mon]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :flock do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "flock.#{username}",
+      :intnet => '192.168.2.5',
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box',
+      :run_list => %w(role[flock])
+    )
+  end
+ 
+  config.vm.define :flock2 do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "flock2.#{username}",
+      :intnet => '192.168.2.4',
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box',
+      :run_list => %w(role[flock])
+    )
+  end
+  
+  config.vm.define :flockregistry do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "flockregistry.#{username}",
+      :run_list => %w(role[flock_registry]),
+      :intnet => '192.168.2.3',
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :builder do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "builder.#{username}",
+      :run_list => %w(role[ninefold-builder]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :builder2 do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "builder2.#{username}",
+      :run_list => %w(role[builder]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  
+  config.vm.define :lxc do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "lxc.#{username}",
+      :run_list => %w(role[lxc]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :zkmaster do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "zkmaster.#{username}",
+      :run_list => %w(role[zkmaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :zk2 do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "zk2.#{username}",
+      :run_list => %w(role[zkmaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+
+  config.vm.define :zkslave do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "zkslave.#{username}",
+      :run_list => %w(role[zkmaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :zkslave2 do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "zkslave2.#{username}",
+      :run_list => %w(role[zkmaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :zkslave3 do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "zkslave3.#{username}",
+      :run_list => %w(role[zkmaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :redismaster do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "redismaster.#{username}",
+      :run_list => %w(role[redismaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :redisslave do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "redisslave.#{username}",
+      :run_list => %w(role[redisslave]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+
+  config.vm.define :redisslave2 do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "redisslave2.#{username}",
+      :run_list => %w(role[redisslave]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  config.vm.define :pgmaster do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "pgmaster.#{username}",
+      :run_list => %w(role[pgmaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+ 
+  config.vm.define :pgslave do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "pgslave.#{username}",
+      :run_list => %w(role[pg]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+  
+  config.vm.define :pgslave2 do |precise_config|
+    node_config.call(
+      precise_config, 
+      :node_name => "pgslave2.#{username}",
+      :run_list => %w(role[pg]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/precise-64.box'
+    )
+  end
+
+  config.vm.define :centos58 do |centos58_config|
+    node_config.call(
+      centos58_config,
+      :node_name => "centos58.#{username}",
+      :run_list => %w(role[base]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/centos58-64.box'
+    )
+  end
+
+  config.vm.define :centos62 do |centos62_config|
+    node_config.call(
+      centos62_config,
+      :node_name => "centos62.#{username}",
+      :run_list => %w(role[base]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/centos62-64.box'
+    )
+  end
+
+  config.vm.define :centos63 do |centos63_config|
+    node_config.call(
+      centos63_config,
+      :node_name => "centos63.#{username}",
+      :run_list => %w(role[base]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/centos63-64.box'
+    )
+  end
+  
+  config.vm.define :centos63redismaster do |centos63_config|
+    node_config.call(
+      centos63_config,
+      :node_name => "centos63redismaster.#{username}",
+      :run_list => %w(role[redismaster]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/centos63-64.box'
+    )
+  end
+  
+  config.vm.define :centos63redisslave do |centos63_config|
+    node_config.call(
+      centos63_config,
+      :node_name => "centos63redisslave.#{username}",
+      :run_list => %w(role[redisslave]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/centos63-64.box'
+    )
+  end
+  config.vm.define :oneiric do |oneiric_config|
+    node_config.call(
+      oneiric_config,
+      :node_name => "oneiric.#{username}",
+      :run_list => %w(role[base]),
+      :box_url => 'https://github.com/downloads/chrisroberts/vagrant-boxes/oneiric-64.box'
+    )
+  end
+end
