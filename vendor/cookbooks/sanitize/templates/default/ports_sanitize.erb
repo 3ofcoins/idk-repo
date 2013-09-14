@@ -1,0 +1,12 @@
+<% require 'socket' -%>
+<% node['sanitize']['ports'].to_hash.map { |k,v| [Socket.getservbyname(k.to_s), v] }.sort_by(&:first).each do |port, allows| -%>
+<%   Array(allows).each do |allow| -%>
+<%     case allow -%>
+<%     when false then nil -%>
+<%     when true -%>
+-A FWR -p tcp -m tcp --dport <%= port %> -j ACCEPT
+<%     else -%>
+-A FWR -p tcp -m tcp --dport <%= port %> --src <%= allow -%> -j ACCEPT
+<%     end -%>
+<%   end -%>
+<% end -%>

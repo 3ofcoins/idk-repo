@@ -1,0 +1,22 @@
+{
+  "sources": {
+    "sanitize": {
+      "path": "."
+    },
+    "apt": {
+      "locked_version": "2.1.1"
+    },
+    "chef-client": {
+      "locked_version": "3.0.6"
+    },
+    "cron": {
+      "locked_version": "1.2.6"
+    },
+    "iptables": {
+      "locked_version": "0.12.0"
+    },
+    "omnibus_updater": {
+      "locked_version": "0.2.4"
+    }
+  }
+}
