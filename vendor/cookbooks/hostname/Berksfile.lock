@@ -1,0 +1,23 @@
+{
+  "sha": "c32b2fdf038945547c27fc623c2d3c2e05faaaf1",
+  "sources": {
+    "hostname": {
+      "locked_version": "0.0.6",
+      "constraint": "= 0.0.6",
+      "path": "."
+    },
+    "minitest-handler": {
+      "locked_version": "0.2.1"
+    },
+    "hostname_test": {
+      "locked_version": "0.1.0",
+      "path": "./test/cookbooks/hostname_test"
+    },
+    "hostsfile": {
+      "locked_version": "1.0.0"
+    },
+    "chef_handler": {
+      "locked_version": "1.1.4"
+    }
+  }
+}
