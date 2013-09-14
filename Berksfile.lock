@@ -10,9 +10,7 @@
       "locked_version": "3.0.6"
     },
     "chef-server": {
-      "locked_version": "2.0.0",
-      "git": "git://github.com/opscode-cookbooks/chef-server.git",
-      "ref": "18d6e951a2daa1154b7e82c8909bb7245e57ec1b"
+      "locked_version": "2.0.0"
     },
     "hostname": {
       "locked_version": "0.1.0"
