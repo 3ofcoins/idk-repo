@@ -4,7 +4,8 @@ description "Heart of the operation"
 run_list 'role[__base]',
          'recipe[ssl-key-vault]',
          'recipe[chef-server-webapp]',
-         'recipe[apache2_odin_auth::server]'
+         'recipe[apache2_odin_auth::server]',
+         'recipe[docker]'
 
 certificates_path = Pathname.new(__FILE__).dirname.dirname.
   join('config/certificates')
