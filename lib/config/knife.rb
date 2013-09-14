@@ -33,7 +33,7 @@ else
   client_key               _cfg.path('.chef/client.pem')
   validation_client_name   "chef-validator"
   validation_key           _cfg.path(".chef/validation.pem")
-  chef_server_url          "http://chef.i.#{_cfg[:domain]}:4000"
+  chef_server_url          _cfg[:chef_server_url] || "https://chef.i.#{_cfg[:domain]}"
 end
 cache_type               'BasicFile'
 cache_options            :path => "#{ENV['HOME']}/.chef/checksums"
