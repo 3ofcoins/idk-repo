@@ -68,6 +68,5 @@ default_attributes(
       :use_privilege_separation => 'yes',
       :x11_display_offset => 10,
       :x11_forwarding => 'yes' }},
-  :sanitize => { :keep_access => true }, # FIXME: drop this line once sure that access works
   :set_fqdn => '*.i.3ofcoins.net'
 )

@@ -1,0 +1,8 @@
+{
+  "id": "marta",
+  "comment": "Marta Paciorkowska",
+  "groups": [ "sysadmin" ],
+  "ssh_keys": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDuOD/c5DSl9+RXyYjQVv8B2yLqM9qfLri2AOO4kkImu1Jh+0Mynx0OhtDiuk0Vb8Ogq0Qdzxa/CXbU1vWv5SjKKobsGZ4nfmbXqJzJj4Lk7xxxVwuyg61hfz9eBZJ06dxvLwnru9DA65l4OINCe4haDe+yUdZvQhsfuOHQz0PAATUc6qMEIuAYbsu9Gmxek6NwJF+wpiRanohU4NYRaFKGnjYqG1RLewZy6jwqm6Ore1mLLjbNe94lKniwEd96yi0dUXEoy5d8TXvq/UpPG4CWGm81wj7msxW8uALVzfdzpSQ/trlFzy7iTNTDEBfRjGHYBcvwSg0BXzJg/yFDOiat marta@paciorkowska.pl",
+  "shell": "/bin/bash",
+  "password": "*NP*"
+}
