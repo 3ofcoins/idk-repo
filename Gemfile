@@ -1,7 +1,5 @@
 source "https://rubygems.org/"
 
-gem "omnibus", "~> 1.1.0"
-
 gem "nanodoc", :git => "git@github.com:3ofcoins/nanodoc.git"
 
 # Needed by code in lib/ - probably better in a gemspec
