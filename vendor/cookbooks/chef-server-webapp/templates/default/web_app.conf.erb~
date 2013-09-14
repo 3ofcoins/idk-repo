@@ -1,0 +1,18 @@
+# -*- conf -*-
+
+<VirtualHost *:80>
+
+  ServerName logstash.i.ginzametrics.com
+  ServerAlias logstash.i.ginzametrics.com
+
+  <Location "/">
+    Order allow,deny
+    Allow from all
+    SetHandler None
+  </Location>
+
+  PerlFixupHandler Apache2::Authen::OdinAuth
+
+  ProxyPass              /  http://5.9.50.179:5601/
+  ProxyPassReverse       /  http://5.9.50.179:5601/
+</VirtualHost>

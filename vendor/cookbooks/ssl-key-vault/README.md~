@@ -1,0 +1,63 @@
+ssl-key-vault cookbook
+======================
+
+This cookbook manages OpenSSL key pairs, using
+[chef-vault](https://github.com/Nordstrom/chef-vault/) to share and
+store private keys.
+
+This cookbook's home is at https://github.com/3ofcoins/ssl-key-vault/
+
+Requirements
+------------
+
+Usage
+-----
+
+1. Generate a self-signed key or a secret key and certificate.
+2. Store the private key in chef-vault. The name should be set to
+   *ssl-key-key\_name*, and if *key\_name* includes any
+   non-alphanumeric characters, they should be changed to underscores
+   (e.g. for key _example.com_, the name for vault should be
+   _ssl-key-example\_com_):
+
+    $ knife encrypt cert \
+      --search 'QUERY' --admins '' \
+      --name ssl-key-example_com \
+      --cert /path/to/example.com.key
+    $ knife upload data_bags/certs
+
+3. Add the key to server's attributes:
+
+```ruby
+example_com_cert = <<EOF
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+EOF
+EOF
+
+default_attributes :ssl_certificates => {
+  'example.com' => example_com_cert
+}
+```
+
+   If you don't want to clutter your role definition, you can read the
+   certificate from file in the chef repo:
+   
+```ruby
+default_attributes :ssl_certificates => {
+  'example.com' => Pathname.new(__FILE__).dirname.join('../config/certificates/example.com.crt').read
+}
+```
+
+
+Attributes
+----------
+
+Recipes
+-------
+
+Author
+------
+
+Author:: Maciej Pasternacki <maciej@3ofcoins.net>

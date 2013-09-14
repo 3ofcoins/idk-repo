@@ -1,0 +1,42 @@
+# -*- conf -*-
+
+<% if node['chef-server']['webapp']['ssl_key_path'] -%>
+<VirtualHost *:80>
+  ServerName <%= node['chef-server']['api_fqdn'] %>
+  ServerAlias <%= node['chef-server']['api_fqdn'] %>
+  RewriteEngine On
+  RewriteRule ^/?(.*)$ https://<%= node['chef-server']['api_fqdn'] %>/$1 [L,R=301]
+
+  CustomLog <%= node['apache']['log_dir'] %>/chef-server-non_ssl-access.log combined
+  ErrorLog  <%= node['apache']['log_dir'] %>/chef-server-non_ssl-error.log
+
+</VirtualHost>
+
+<VirtualHost *:443>
+  SSLEngine on
+  SSLCertificateFile <%= node['chef-server']['webapp']['ssl_certificate_path'] %>
+<% if node['chef-server']['webapp']['ssl_certificate_chain_path'] -%>
+  SSLCertificateChainFile <%= node['chef-server']['webapp']['ssl_certificate_chain_path'] %>
+<% end -%>
+  SSLCertificateKeyFile <%= node['chef-server']['webapp']['ssl_key_path'] %>
+
+<% else -%>
+<VirtualHost *:80>
+
+<% end -%>
+  CustomLog <%= node['apache']['log_dir'] %>/chef-server-access.log combined
+  ErrorLog  <%= node['apache']['log_dir'] %>/chef-server-error.log
+
+  ServerName <%= node['chef-server']['api_fqdn'] %>
+  ServerAlias <%= node['chef-server']['api_fqdn'] %>
+
+  <Location "/">
+    Order allow,deny
+    Allow from all
+    SetHandler None
+  </Location>
+
+  SSLProxyEngine On
+  ProxyPass        /  https://127.0.0.1:<%= node['chef-server']['webapp']['backend_https_port'] %>/
+  ProxyPassReverse /  https://127.0.0.1:<%= node['chef-server']['webapp']['backend_https_port'] %>/
+</VirtualHost>
