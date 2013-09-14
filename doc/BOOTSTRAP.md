@@ -16,7 +16,7 @@ Chef Server / Headquarters
 3. On the server, as root:
 
     # cd foundation/config/bootstrap
-    # ./configure --with-chef-server NAME=headquarters SERVER_FQDN=chef.example.com
+    # ./configure --with-chef-server NAME=headquarters SERVER_FQDN=chef.i.example.com
     # chef-server-ctl test
     
 3. Copy following files from Chef server to `.chef` directory on the
@@ -28,8 +28,8 @@ Chef Server / Headquarters
    
 4. Create your own user:
 
-    $ bundle exec knife client create MY_USERNAME --key .chef/admin.pem --user admin --admin --file .chef/client.pem
-    $ bundle exec knife status
+    $ knife client create MY_USERNAME --key .chef/admin.pem --user admin --admin --file .chef/client.pem --server-url https://chef.i.example.com/
+    $ knife status
 
 5. **WTF?** Delete admin user? Or not? What are "users" and how are they
    different from "clients?
@@ -40,12 +40,12 @@ Chef Server / Headquarters
 
 7. Update run list
 
-    $ bundle exec knife node run list add headquarters 'role[__base]'
+    $ knife node run list add headquarters 'role[__base]'
 
 8. Re-run chef-client
 
     # mkdir /var/cache/chef # <- this shouldn't be necessary
-    # chef-client -S https://chef.example.com/ -N headquarters
+    # chef-client -S https://chef.i.example.com/ -N headquarters
     # chef-client # <- to see if client.rb is fine
 
 TODOs
