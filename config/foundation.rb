@@ -1,1 +1,1 @@
-domain 'example.com'
+domain 'i.3ofcoins.net'
