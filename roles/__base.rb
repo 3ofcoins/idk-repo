@@ -7,6 +7,6 @@ run_list 'recipe[apt]',
 
 default_attributes(
   :omnibus_updater => {
-    :version => '11.4.4-1',
+    :version => '11.6.0',
     :remove_chef_system_gem => true,
     :cache_dir => '/var/cache/chef' })
