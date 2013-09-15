@@ -19,6 +19,6 @@ cookbook 'ssl-key-vault'
 cookbook 'sudo'
 cookbook 'users'
 
-Dir['cookbooks/*/metadata.rb'].each do |local_metadata|
-  metadata path: File.dirname(local_metadata)
+Dir['cookbooks/*/metadata.rb'].each do |metadata_path|
+  metadata path: File.dirname(metadata_path)
 end
