@@ -18,3 +18,7 @@ cookbook 'sanitize'
 cookbook 'ssl-key-vault'
 cookbook 'sudo'
 cookbook 'users'
+
+Dir['cookbooks/*/metadata.rb'].each do |metadata_path|
+  metadata path: File.dirname(metadata_path)
+end
