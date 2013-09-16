@@ -5,7 +5,7 @@
    ErrorLog <%= node['apache']['log_dir'] %>/jenkins-error.log
    TransferLog <%= node['apache']['log_dir'] %>/jenkins-access.log
 
-<% if node['jenkins']['http_proxy']['server_ssl_key_path'] -%>
+<% if node['jenkins']['http_proxy']['ssl']['enabled'] -%>
    RewriteEngine on
    RewriteRule ^/?(.*)$ https://<%= node['jenkins']['http_proxy']['host_name'] %>/$1 [L,R=301]
 </VirtualHost>
@@ -19,11 +19,11 @@
    TransferLog <%= node['apache']['log_dir'] %>/jenkins-access.log
 
    SSLEngine on
-   SSLCertificateFile <%= node['jenkins']['http_proxy']['server_ssl_certificate_path'] %>
-<%   if node['jenkins']['http_proxy']['server_ssl_certificate_chain_path'] -%>
-   SSLCertificateChainFile <%= node['jenkins']['http_proxy']['server_ssl_certificate_chain_path'] %>
+   SSLCertificateFile <%= node['jenkins']['http_proxy']['ssl']['cert_path'] %>
+<%   if node['jenkins']['http_proxy']['ssl']['chain_path'] -%>
+   SSLCertificateChainFile <%= node['jenkins']['http_proxy']['ssl']['chain_path'] %>
 <%   end -%>
-   SSLCertificateKeyFile <%= node['jenkins']['http_proxy']['server_ssl_key_path'] %>
+   SSLCertificateKeyFile <%= node['jenkins']['http_proxy']['ssl']['key_path'] %>
 <% end -%>
    PerlFixupHandler Apache2::Authen::OdinAuth
 
