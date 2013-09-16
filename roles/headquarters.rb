@@ -5,7 +5,7 @@ run_list 'role[__base]',
          'recipe[ssl-key-vault]',
          'recipe[chef-server-webapp]',
          'recipe[apache2_odin_auth::server]',
-         'recipe[docker]'
+         'recipe[jenkins-app::master]'
 
 certificates_path = Pathname.new(__FILE__).dirname.dirname.
   join('config/certificates')
@@ -37,6 +37,14 @@ default_attributes(
       :ssl_certificate_path => '/etc/ssl/certs/star.i.3ofcoins.net.crt' # ,
       # :ssl_certificate_chain_path => '/etc/ssl/certs/star.i.3ofcoins.net.chain.pem'
     }},
+  :jenkins => {
+    :http_proxy => {
+      :ssl => {
+        :enabled => true,
+        :key_path => '/etc/ssl/private/star.i.3ofcoins.net.key',
+        :cert_path => '/etc/ssl/certs/star.i.3ofcoins.net.crt' # ,
+        # :chain_path => '/etc/ssl/certs/star.i.3ofcoins.net.chain.pem'
+      }}},
   :sanitize => { :ports => { :http => true, :https => true }},
   :ssl_certificates => {
     'star.i.3ofcoins.net' => {
