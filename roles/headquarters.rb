@@ -20,6 +20,7 @@ default_attributes(
         :company_url => 'http://3ofcoins.net/',
         'template-variables' => {
           :links => [
+            'https://jenkins.i.3ofcoins.net/',
             'https://www.hipchat.com/google/login?from=google&domain=3ofcoins.net'
           ]}},
       :server_domain => 'i.3ofcoins.net',
@@ -38,6 +39,10 @@ default_attributes(
       # :ssl_certificate_chain_path => '/etc/ssl/certs/star.i.3ofcoins.net.chain.pem'
     }},
   :jenkins => {
+    :git => {
+      'user.email' => 'tachikoma@3ofcoins.net',
+      'user.realname' => 'Tachikoma AI (Jenkins)'
+    },
     :http_proxy => {
       :ssl => {
         :enabled => true,
