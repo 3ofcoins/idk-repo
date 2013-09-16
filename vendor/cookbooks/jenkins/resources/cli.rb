@@ -1,6 +1,5 @@
 #
 # Cookbook Name:: jenkins
-# Based on hudson
 # Resource:: cli
 #
 # Author:: Doug MacEachern <dougm@vmware.com>
@@ -28,6 +27,11 @@ attribute :home, :kind_of => String
 attribute :command, :kind_of => String
 attribute :timeout, :kind_of => Integer
 attribute :block, :kind_of => Proc
+attribute :jvm_options, :kind_of => String
+attribute :username, :kind_of => String
+attribute :password, :kind_of => String
+attribute :password_file, :kind_of => String
+attribute :key_file, :kind_of => String
 
 def initialize(name, run_context=nil)
   super

@@ -1,6 +1,5 @@
 #
 # Cookbook Name:: jenkins
-# Based on hudson
 # Resource:: node
 #
 # Author:: Doug MacEachern <dougm@vmware.com>
@@ -27,7 +26,7 @@ attribute :description, :kind_of => String
 attribute :remote_fs, :kind_of => String
 attribute :executors, :kind_of => Integer
 attribute :mode, :equal_to => ["normal", "exclusive"]
-attribute :labels, :kind_of => String
+attribute :labels, :kind_of => Array
 attribute :launcher, :equal_to => ["jnlp", "command", "ssh"]
 attribute :availability, :equal_to => ["always", "demand"]
 attribute :in_demand_delay, :kind_of => Integer

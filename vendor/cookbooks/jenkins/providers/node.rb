@@ -1,6 +1,5 @@
 #
 # Cookbook Name:: jenkins
-# Based on hudson
 # Provider:: node
 #
 # Author:: Doug MacEachern <dougm@vmware.com>
@@ -21,11 +20,19 @@
 # limitations under the License.
 #
 
+def load_current_resource
+  @current_resource = Chef::Resource::JenkinsNode.new(@new_resource.name)
+  # Inject some useful platform labels
+  @new_resource.labels((@new_resource.labels + platform_labels).uniq)
+  @current_resource
+end
+
 def action_update
   action_create
 end
 
 def action_create
+
   gscript = "#{new_resource.remote_fs}/manage_#{new_resource.name}.groovy"
 
   file gscript do
@@ -33,7 +40,7 @@ def action_create
     backup false
   end
 
-  cookbook_file "#{node[:jenkins][:node][:home]}/node_info.groovy" do
+  cookbook_file "#{node['jenkins']['node']['home']}/node_info.groovy" do
     source "node_info.groovy"
   end
 
@@ -79,4 +86,19 @@ end
 
 def action_offline
   jenkins_cli "offline-node #{new_resource.name}"
+end
+
+private
+
+def platform_labels
+  platform_labels = []
+  platform_labels << node['platform'] # ubuntu
+  platform_labels << node['platform_family'] # debian
+  platform_labels << node['platform_version'] # 10.04
+  platform_labels << "#{node['platform']}-#{node['platform_version']}" # ubuntu-10.04
+  platform_labels << node['kernel']['machine'] # x86_64
+  platform_labels << node['os'] # linux
+  platform_labels << node['os_version'] # 2.6.32-38-server
+  platform_labels << node['virtualization']['system'] if node.attribute?('virtualization') # xen
+  platform_labels
 end

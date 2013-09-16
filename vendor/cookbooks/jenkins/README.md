@@ -1,154 +1,213 @@
-Description
-===========
-Installs and configures Jenkins CI server & node slaves.  Resource providers to support automation via jenkins-cli, including job create/update.
+jenkins Cookbook
+================
+
+Installs and configures Jenkins CI server & node slaves. Resource providers to
+support automation via jenkins-cli, including job create/update.
 
 Requirements
 ============
 
-Chef
-----
+Chef 0.10.10+ and Ohai 6.10+ for platform_family use.
 
-* Chef version 0.9.10 or higher
+## Platform:
 
-Platform
---------
+### Server (Master) Recipe
 
-* 'default' - Server installation - currently supports Red Hat/CentOS 5.x and Ubuntu 8.x/9.x/10.x
+* Ubuntu
+* RHEL/CentOS
 
-* 'node_ssh' - Any platform that is running sshd.
+### Node (Slave) Recipe
 
-* 'node_jnlp' - Unix platforms. (depends on runit recipe)
+Agent Flavor:
 
-* 'node_windows' - Windows platforms only.  Depends on .NET Framework, which can be installed with the windows::dotnetfx recipe.
-
-Java
-----
-
-Jenkins requires Java 1.5 or higher, which can be installed via the Opscode java cookbook or windows::java recipe.
-
-Jenkins node authentication
----------------------------
-
-If your Jenkins instance requires authentication, you'll either need to embed user:pass in the jenkins.server.url or issue a jenkins-cli.jar login command prior to using the jenkins::node_* recipes.  For example, define a role like so:
-
-  name "jenkins_ssh_node"
-  description "cli login & register ssh slave with Jenkins"
-  run_list %w(vmw::jenkins_login jenkins::node_ssh)
-
-Where the jenkins_login recipe is simply:
-
-  jenkins_cli "login --username #{node[:jenkins][:username]} --password #{node[:jenkins][:password]}"
+* `ssh` - Any Unix platform that is running `sshd`.
+* `jnlp` - Most Unix platforms.
+* `windows` - Windows platforms only. Depends on .NET Framework.
 
 Attributes
 ==========
 
-* jenkins[:mirror] - Base URL for downloading Jenkins (server)
-* jenkins[:java_home] - Java install path, used for for cli commands
-* jenkins[:server][:home] - JENKINS_HOME directory
-* jenkins[:server][:user] - User the Jenkins server runs as
-* jenkins[:server][:group] - Jenkins user primary group
-* jenkins[:server][:port] - TCP listen port for the Jenkins server
-* jenkins[:server][:url] - Base URL of the Jenkins server
-* jenkins[:server][:plugins] - Download the latest version of plugins in this list, bypassing update center
-* jenkins[:node][:name] - Name of the node within Jenkins
-* jenkins[:node][:description] - Jenkins node description
-* jenkins[:node][:executors] - Number of node executors
-* jenkins[:node][:home] - Home directory ("Remote FS root") of the node
-* jenkins[:node][:labels] - Node labels
-* jenkins[:node][:mode] - Node usage mode, "normal" or "exclusive" (tied jobs only)
-* jenkins[:node][:launcher] - Node launch method, "jnlp", "ssh" or "command"
-* jenkins[:node][:availability] - "always" keeps node on-line, "demand" off-lines when idle
-* jenkins[:node][:in_demand_delay] - number of minutes for which jobs must be waiting in the queue before attempting to launch this slave.
-* jenkins[:node][:idle_delay] - number of minutes that this slave must remain idle before taking it off-line.
-* jenkins[:node][:env] - "Node Properties" -> "Environment Variables"
-* jenkins[:node][:user] - user the slave runs as
-* jenkins[:node][:ssh_host] - Hostname or IP Jenkins should connect to when launching an SSH slave
-* jenkins[:node][:ssh_port] - SSH slave port
-* jenkins[:node][:ssh_user] - SSH slave user name (only required if jenkins server and slave user is different)
-* jenkins[:node][:ssh_pass] - SSH slave password (not required when server is installed via default recipe)
-* jenkins[:node][:ssh_private_key] - jenkins master defaults to: `~/.ssh/id_rsa` (created by the default recipe)
-* jenkins[:node][:jvm_options] - SSH slave JVM options
-* jenkins[:iptables_allow] - if iptables is enabled, add a rule passing 'jenkins[:server][:port]'
-* jenkins[:nginx][:http_proxy][:variant] - use `nginx` or `apache2` to proxy traffic to jenkins backend (`nil` by default)
-* jenkins[:http_proxy][:www_redirect] - add a redirect rule for 'www.*' URL requests ("disable" by default)
-* jenkins[:http_proxy][:listen_ports] - list of HTTP ports for the HTTP proxy to listen on ([80] by default)
-* jenkins[:http_proxy][:host_name] - primary vhost name for the HTTP proxy to respond to (`node[:fqdn]` by default)
-* jenkins[:http_proxy][:host_aliases] - optional list of other host aliases to respond to (empty by default)
-* jenkins[:http_proxy][:client_max_body_size] - max client upload size ("1024m" by default, nginx only)
+### Common Attributes
 
-Usage
-=====
+* `node['jenkins']['mirror']` - Base URL for downloading all code (WAR file and
+  plugins).
+* `node['jenkins']['java_home']` - Java install path, used for for cli commands.
+* `node['jenkins']['iptables_allow']` - If iptables is enabled, add a rule
+  passing `node['jenkins']['server']['port']`.
 
-'default' recipe
-----------------
+### Master/Server related Attributes
 
-Installs a Jenkins CI server using the http://jenkins-ci.org/redhat RPM.  The recipe also generates an ssh private key and stores the ssh public key in the node 'jenkins[:pubkey]' attribute for use by the node recipes.
+* `node['jenkins']['server']['install_method']` - Whether Jenkins is installed
+  from packages or run from a WAR file.
+* `node['jenkins']['server']['home']` - Location of `JENKINS_HOME` directory.
+* `node['jenkins']['server']['user']` - User the Jenkins server runs as.
+* `node['jenkins']['server']['group']` - Jenkins user primary group.
+* `node['jenkins']['server']['port']` - TCP port Jenkins server listens on.
+* `node['jenkins']['server']['url']` - Base URL of the Jenkins server.
+* `node['jenkins']['server']['plugins']` - Download the latest version of
+  plugins in this Array, bypassing update center. The members of the Array can
+  either be strings if the latest version desired OR a Hash of the form
+`{'name' => 'git', 'version' => '1.4.0'}` if a specific version is required.
+* `node['jenkins']['server']['jvm_options']` - Additional tuning parameters
+  to pass the underlying JVM process.
+* `node['jenkins']['http_proxy']['variant']` - use `nginx` or `apache2` to
+  proxy traffic to jenkins backend (`nginx` by default)
+* `node['jenkins']['http_proxy']['www_redirect']` - add a redirect rule for
+  'www.*' URL requests ("disable" by default)
+* `node['jenkins']['http_proxy']['listen_ports']` - list of HTTP ports for the
+  HTTP proxy to listen on ([80] by default).
+* `node['jenkins']['http_proxy']['host_name']` - primary vhost name for the
+  HTTP proxy to respond to (`node['fqdn']` by default).
+* `node['jenkins']['http_proxy']['host_aliases']` - optional list of other host
+  aliases to respond to (empty by default).
+* `node['jenkins']['http_proxy']['client_max_body_size']` - max client upload
+  size ("1024m" by default, nginx only).
+* `node['jenkins']['http_proxy']['server_auth_method']` - Authentication with
+  the server can be done with cas (using `apache2::mod_auth_cas`), or basic
+  (using `htpasswd`). The default is no authentication.
+* `node['jenkins']['http_proxy']['basic_auth_username']` - Username to use for
+  HTTP Basic Authenitcation.
+* `node['jenkins']['http_proxy']['basic_auth_password']` - Password to use with
+  HTTP Basic Authenitcation.
+* `node['jenkins']['http_proxy']['cas_login_url']` - Login url for cas if using
+  cas authentication.
+* `node['jenkins']['http_proxy']['cas_validate_url']` - Validation url for cas
+  if using cas authentication.
+* `node['jenkins']['http_proxy']['cas_validate_server']` - Whether to validate
+  the server cert. Defaults to off.
+* `node['jenkins']['http_proxy']['cas_root_proxy_url']` - If set, sets the url
+  that the cas server redirects to after auth.
 
-'node_ssh' recipe
------------------
+### Node/Slave related Attributes
 
-Creates the user and group for the Jenkins slave to run as and sets `.ssh/authorized_keys` to the 'jenkins[:pubkey]' attribute.  The 'jenkins-cli.jar'[1] is downloaded from the Jenkins server and used to manage the nodes via the 'groovy'[2] cli command.  Jenkins is configured to launch a slave agent on the node using its SSH slave plugin[3].
+* `node['jenkins']['node']['agent_type']` - Type of agent to communicate with
+  this slave/node. Valid values include `jnlp`, `ssh` and `windows`. (default
+  is `jnlp`)
+* `node['jenkins']['node']['name']` - Name of the node within Jenkins.
+* `node['jenkins']['node']['description']` - Jenkins node description.
+* `node['jenkins']['node']['executors']` - Number of node executors.
+* `node['jenkins']['node']['home]` - Home directory ("Remote FS root") of the node.
+* `node['jenkins']['node']['labels']` - Node labels.
+* `node['jenkins']['node']['mode']` - Node usage mode, `normal` or `exclusive`
+  (tied jobs only).
+* `node['jenkins']['node']['availability']` - `always` keeps node on-line,
+  `demand` off-lines when idle.
+* `node['jenkins']['node']['in_demand_delay']` - number of minutes for which
+  jobs must be waiting in the queue before attempting to launch this slave.
+* `node['jenkins']['node']['idle_delay']` - number of minutes that this slave
+  must remain idle before taking it off-line.
+* `node['jenkins']['node']['env']` - "Node Properties" -> "Environment
+  Variables".
+* `node['jenkins']['node']['user']` - user the slave runs as.
+* `node['jenkins']['node']['ssh_host']` - Hostname or IP Jenkins Master should
+  connect to when launching an SSH slave.
+* `node['jenkins']['node']['ssh_port']` - SSH port Jenkins Master should
+  connect to when launching a slave.
+* `node['jenkins']['node']['ssh_user']` - SSH slave user name (only required if
+  Jenkins server and slave user is different).
+* `node['jenkins']['node']['ssh_pass']` - SSH slave password (not required when
+  server is installed via `jenkins::server` recipe).
+* `node['jenkins']['node']['ssh_private_key']` - Jenkins Master defaults to:
+  `JENKINS_HOME/.ssh/id_rsa` (created by the `jenkins::server` recipe).
+* `node['jenkins']['node']['jvm_options']` - Additional tuning parameters to
+  pass the underlying JVM process.
 
-[1] http://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI
-[2] http://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console
-[3] http://wiki.jenkins-ci.org/display/JENKINS/SSH+Slaves+plugin
+Recipes
+=======
 
-'node_jnlp' recipe
-------------------
+server
+------
 
-Creates the user and group for the Jenkins slave to run as and '/jnlpJars/slave.jar' is downloaded from the Jenkins server.  Depends on runit_service from the runit cookbook.
+Creates all required directories, installs Jenkins and generates an ssh private
+key and stores the ssh public key in the `node['jenkins']['server']['pubkey']`
+attribute for use by the node recipes. The installation method is controlled by
+the `node['jenkins']['server']['install_method']` attribute. The following
+install methods are supported:
 
-'node_windows' recipe
----------------------
+* __package__ - Installs Jenkins from the official jenkins-ci.org packages.
+* __war__ - Downloads the latest version of the Jenkins WAR file from
+  http://jenkins-ci. The server process is configured to run as a runit
+  service.
 
-Creates the home directory for the node slave and sets 'JENKINS_HOME' and 'JENKINS_URL' system environment variables.  The 'winsw'[1] Windows service wrapper will be downloaded and installed, along with generating `jenkins-slave.xml` from a template.  Jenkins is configured with the node as a 'jnlp'[2] slave and '/jnlpJars/slave.jar' is downloaded from the Jenkins server.  The 'jenkinsslave' service will be started the first time the recipe is run or if the service is not running.  The 'jenkinsslave' service will be restarted if '/jnlpJars/slave.jar' has changed.  The end results is functionally the same had you chosen the option to "Let Jenkins control this slave as a Windows service"[3].
+node
+----
 
-[1] http://weblogs.java.net/blog/2008/09/29/winsw-windows-service-wrapper-less-restrictive-license
-[2] http://wiki.jenkins-ci.org/display/JENKINS/Distributed+builds
-[3] http://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+as+a+Windows+service
+The type of agent that is used to communicate with the slave is determined by
+the attribute `node['jenkins']['node']['agent_type']`. The following agent
+types are supported:
 
-'proxy_nginx' recipe
---------------------
+* __ssh__ - Creates the user and group for the Jenkins slave to run as and sets
+`.ssh/authorized_keys` to the `node['jenkins']['server']['pubkey']` attribute.
+The [jenkins-cli.jar](http://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI)
+is downloaded from the Jenkins server and used to manage the nodes via the
+[groovy](http://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Script+Console) cli
+command. Jenkins is configured to launch a slave agent on the node using it's
+[SSH slave plugin](http://wiki.jenkins-ci.org/display/JENKINS/SSH+Slaves+plugin).
+* __jnlp__ - Creates the user and group for the Jenkins slave to run as and
+`/jnlpJars/slave.jar` is downloaded from the Jenkins server. The slave process
+is configured to run as a runit service.
+* __windows__ - Creates the home directory for the node slave and sets `JENKINS_HOME` and
+`JENKINS_URL` system environment variables.  The
+[winsw](http://weblogs.java.net/blog/2008/09/29/winsw-windows-service-wrapper-less-restrictive-license)
+Windows service wrapper will be downloaded and installed, along with generating
+`jenkins-slave.xml` from a template.  Jenkins is configured with the node as a
+[jnlp](http://wiki.jenkins-ci.org/display/JENKINS/Distributed+builds) slave and
+`/jnlpJars/slave.jar` is downloaded from the Jenkins server.  The
+`jenkinsslave` service will be started the first time the recipe is run or if
+the service is not running.  The 'jenkinsslave' service will be restarted if
+`/jnlpJars/slave.jar` has changed.  The end results is functionally the same
+had you chosen the option to
+[Let Jenkins control this slave as a Windows service](http://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+as+a+Windows+service).
 
-Uses the nginx::source recipe from the nginx cookbook to install an HTTP frontend proxy. To automatically activate this recipe set the `node[:jenkins][:http_proxy][:variant]` to `nginx`.
+proxy
+-----
 
-'proxy_apache2' recipe
-----------------------
+Installs a proxy and creates a vhost to route traffic to the installed Jenkins
+server. The type of HTTP proxy that is installed and configured is determined
+by the `node['jenkins']['http_proxy']['variant']` attribute. The following HTTP
+proxy variants are supported:
 
-Uses the apache2 recipe from the apache2 cookbook to install an HTTP frontend proxy. To automatically activate this recipe set the `node[:jenkins][:http_proxy][:variant]` to `apache2`.
+* __apache2__
+* __nginx__
 
-'jenkins_cli' resource provider
--------------------------------
+Resource/Provider
+=================
 
-This resource can be used to execute the Jenkins cli from your recipes.  For example, install plugins via update center and restart Jenkins:
+jenkins_cli
+-----------
 
-    %w(git URLSCM build-publisher).each do |plugin|
+This resource can be used to execute the Jenkins cli from your recipes.  For
+example, install plugins via update center and restart Jenkins:
+
+    %w{ git URLSCM build-publisher }.each do |plugin|
       jenkins_cli "install-plugin #{plugin}"
       jenkins_cli "safe-restart"
     end
 
-'jenkins_node' resource provider
---------------------------------
+jenkins_node
+------------
 
-This resource can be used to configure nodes as the 'node_ssh' and 'node_windows' recipes do or "Launch slave via execution of command on the Master".
+This resource can be used to configure nodes as the `node_ssh` and
+`node_windows` recipes do or "Launch slave via execution of command on the
+Master":
 
-    jenkins_node node[:fqdn] do
+    jenkins_node node['fqdn'] do
       description  "My node for things, stuff and whatnot"
-      executors    5
-      remote_fs    "/var/jenkins"
-      launcher     "command"
-      command      "ssh -i my_key #{node[:fqdn]} java -jar #{remote_fs}/slave.jar"
-      env          "ANT_HOME" => "/usr/local/ant", "M2_REPO" => "/dev/null"
+      executors 5
+      remote_fs "/var/jenkins"
+      launcher "command"
+      command "ssh -i my_key #{node[:fqdn]} java -jar #{remote_fs}/slave.jar"
+      env "ANT_HOME" => "/usr/local/ant", "M2_REPO" => "/dev/null"
     end
 
-'jenkins_job' resource provider
--------------------------------
+jenkins_job
+-----------
 
 This resource manages jenkins jobs, supporting the following actions:
 
-   :create, :update, :delete, :build, :disable, :enable
+    :create, :update, :delete, :build, :disable, :enable
 
-The 'create' and 'update' actions require a jenkins job config.xml.  Example:
+The `:create` and `:update` actions require a jenkins job config.xml.  Example:
 
     git_branch = 'master'
     job_name = "sigar-#{branch}-#{node[:os]}-#{node[:kernel][:machine]}"
@@ -167,33 +226,37 @@ The 'create' and 'update' actions require a jenkins job config.xml.  Example:
       notifies :build, resources(:jenkins_job => job_name), :immediately
     end
 
-'manage_node' library
----------------------
+Jenkins Node Authentication
+===========================
 
-The script to generate groovy that manages a node can be used standalone.  For example:
+If your Jenkins instance requires authentication, you'll either need to embed
+user:pass in `node['jenkins']['server']['url']` or issue a jenkins-cli.jar
+login command prior to using the `jenkins::node_*` recipes.  For example,
+define a role like so:
 
-    % ruby manage_node.rb name slave-hostname remote_fs /home/jenkins ... | java -jar jenkins-cli.jar -s http://jenkins:8080/ groovy =
+    name "jenkins_ssh_node"
+    description "cli login & register ssh slave with Jenkins"
+    run_list %w{ mycompany-jenkins::jenkins_login jenkins::node_ssh }
 
-Issues
-======
+Where the jenkins_login recipe is simply:
 
-* CLI authentication - http://issues.jenkins-ci.org/browse/JENKINS-3796
+    jenkins_cli "login --username #{node['jenkins']['username']} --password #{node['jenkins']['password']}"
 
-* CLI *-node commands fail with "No argument is allowed: nameofslave" - http://issues.jenkins-ci.org/browse/JENKINS-5973
+License and Author
+==================
 
-License & Author
-================
-
-This is a downstream fork of Doug MacEachern's Hudson cookbook (https://github.com/dougm/site-cookbooks) and therefore deserves all the glory.
-
-Author:: Doug MacEachern (<dougm@vmware.com>)
-
-Contributor:: AJ Christensen <aj@junglist.gen.nz>
-Contributor:: Fletcher Nichol <fnichol@nichol.ca>
-Contributor:: Roman Kamyk <rkj@go2.pl>
-Contributor:: Darko Fabijan <darko@renderedtext.com>
-
-Copyright:: 2010, VMware, Inc
+|                      |                                          |
+|:---------------------|:-----------------------------------------|
+| **Original Author**  | Doug MacEachern (<dougm@vmware.com>)     |
+| **Contributor**      | AJ Christensen <aj@junglist.gen.nz>      |
+| **Contributor**      | Fletcher Nichol <fnichol@nichol.ca>      |
+| **Contributor**      | Roman Kamyk <rkj@go2.pl>                 |
+| **Contributor**      | Darko Fabijan <darko@renderedtext.com>   |
+| **Contributor**      | Seth Chisamore <schisamo@opscode.com>    |
+|                      |                                          |
+| **Copyright**        | Copyright (c) 2010 VMware, Inc.          |
+| **Copyright**        | Copyright (c) 2011 Fletcher Nichol       |
+| **Copyright**        | Copyright (c) 2013 Opscode, Inc.         |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
