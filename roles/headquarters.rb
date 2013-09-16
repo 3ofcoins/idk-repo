@@ -41,7 +41,7 @@ default_attributes(
   :jenkins => {
     :git => {
       'user.email' => 'tachikoma@3ofcoins.net',
-      'user.realname' => 'Tachikoma AI (Jenkins)'
+      'user.name' => 'Tachikoma AI (Jenkins)'
     },
     :http_proxy => {
       :ssl => {
