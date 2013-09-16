@@ -8,4 +8,4 @@ default['jenkins']['http_proxy']['host_name'] = "jenkins.#{domain}"
 default['jenkins']['http_proxy']['variant'] = 'apache2'
 
 default['jenkins']['git']['user.email'] = "jenkins@#{domain}"
-default['jenkins']['git']['user.realname'] = "Jenkins"
+default['jenkins']['git']['user.name'] = "Jenkins"
