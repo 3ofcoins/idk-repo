@@ -7,7 +7,8 @@ include_recipe 'apache2::mod_ssl'
 include_recipe 'docker'
 include_recipe 'postfix'
 
-include_recipe 'jenkins'
+include_recipe 'jenkins::server'
+include_recipe 'jenkins::proxy'
 
 group 'docker::jenkins' do
   group_name 'docker'
@@ -26,7 +27,7 @@ remote_directory "/srv/jenkins/site-files" do
 end
 
 # needed for the backup script
-include_cookbook 'perl'
+include_recipe 'perl'
 package 'libxml-simple-perl'
 package 'libwww-perl'
 cookbook_file '/usr/share/jenkins/backup.pl' do
