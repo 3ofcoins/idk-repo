@@ -24,3 +24,8 @@ node['jenkins']['git'].each do |var, value|
     end
   end
 end
+
+Dir[File.join(File.dirname(__FILE__), 'builder-*.rb')].each do |subrecipe|
+  subrecipe = File.basename(subrecipe, '.rb')
+  include_recipe "#{cookbook_name}::#{subrecipe}"
+end
