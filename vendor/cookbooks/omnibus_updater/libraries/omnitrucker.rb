@@ -42,6 +42,9 @@ module OmnibusTrucker
         end
         @attrs[:machine] = args[:machine] || node[:kernel][:machine]
       end
+      if @attrs[:platform] == 'mac_os_x' && @attrs[:platform_version].to_f >= 10.7
+        @attrs[:platform_version] = '10.7'
+      end
       @attrs
     end
 
