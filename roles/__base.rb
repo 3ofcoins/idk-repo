@@ -1,8 +1,7 @@
 name "__base"
 description "Base role applied to all nodes. It should be included in the base role of a concrete deployment."
 
-run_list 'recipe[apt]',
-         'recipe[users::sysadmins]',
+run_list 'recipe[users::sysadmins]',
          'recipe[sudo]',
          'recipe[openssh]',
          'recipe[chef-client::config]',
