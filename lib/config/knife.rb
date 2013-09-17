@@ -32,7 +32,7 @@ else
   node_name                _cfg[:chef_username] || _cfg[:username]
   client_key               _cfg.path('.chef/client.pem')
   validation_client_name   "chef-validator"
-  validation_key           _cfg.path(".chef/validation.pem")
+  validation_key           _cfg.path(".chef/chef-validator.pem")
   chef_server_url          _cfg[:chef_server_url] || "https://chef.i.#{_cfg[:domain]}"
 end
 cache_type               'BasicFile'
