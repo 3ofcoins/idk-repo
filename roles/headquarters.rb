@@ -13,6 +13,10 @@ certificates_path = Pathname.new(__FILE__).dirname.dirname.
 default_attributes(
   :apache2 => {
     :odin_auth => {
+      :permissions => [
+        { 'url' => '^jenkins.i.3ofcoins.net/github-webhook', 'who' => 'all' },
+        { 'url' => '', 'who' => 'authed' }
+      ],
       :server_branch => 'develop',
       :server_config => {
         :google_apps_domain => '3ofcoins.net',
