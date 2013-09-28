@@ -68,7 +68,12 @@ action :create do
       if u['home']
         home_dir = u['home']
       else
-        home_dir = "/home/#{u['username']}"
+        case node['platform_family']
+        when 'mac_os_x'
+          home_dir = "/Users/#{u['username']}"
+        else
+          home_dir = "/home/#{u['username']}"
+        end
       end
 
       # The user block will fail if the group does not yet exist.
@@ -78,6 +83,10 @@ action :create do
         group u['username'] do
           gid u['gid']
         end
+      end
+
+      if !u['gid'] && node['platform_family'] == 'mac_os_x'
+        u['gid'] = 20           # staff
       end
 
       # Create user object.
