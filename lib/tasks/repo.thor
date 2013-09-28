@@ -3,26 +3,6 @@
 class Repo < Thor
   include Thor::Actions
 
-  desc :setup, "Initialize the repository"
-  method_option :python, :default => "python"
-  method_option :clean, :aliases => '-c', :type => :boolean, :default => false
-  def setup
-    thor('repo:clean') if options[:clean]
-    create_link '.chef/knife.rb', '../lib/config/knife.rb', :force => true
-
-    chmod '.chef', 0700, :verbose => false
-    inside '.chef' do
-      Dir['*.pem', '*.secret', '*.rb'].each do |f|
-        chmod f, 0600, :verbose => false
-      end
-    end
-  end
-
-  desc :clean, "Clean the repository"
-  def clean
-    remove_dir ".chef"
-  end
-
   desc :upload, "Upload everything to the Chef server"
   def upload
     knife 'cookbook upload', '--all'
@@ -42,20 +22,10 @@ class Repo < Thor
     knife 'data', 'bag', 'from', 'file', '--all'
   end
 
-  desc 'adduser NAME [-- KNIFE_ARGS ...]', "Create a new Chef user"
-  def adduser(name, *knife_args)
-    require 'securerandom'
-    knife 'user', 'create', '--yes', '--disable-editing',
-          '--password', SecureRandom.base64(129),
-          '--admin',
-          *knife_args,
-          name
-  end
-
   no_tasks do
     def knife(command, *args)
       say_status :knife, "#{command} #{args.join(' ')}"
-      system 'knife', *(command.split), *args
+      system 'knife', *(command.split), *args or abort
     end
   end
 end

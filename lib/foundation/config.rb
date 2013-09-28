@@ -1,45 +1,75 @@
 require 'etc'
 
-require 'mixlib/config'
-require 'net/ssh'
+require 'minigit'
+require 'tinyconfig'
 
 module Foundation
-  class Config
-    extend Mixlib::Config
+  class Config < TinyConfig
+    option :root_dir,
+           ::File.realpath(::File.join(::File.dirname(__FILE__), '..', '..'))
+    option :domain
+    option :email_domain, -> { domain }
+    option :headquarters, -> { "headquarters.#{domain}" }
 
-    configure do |c|
-      c[:root_dir] = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
-      c[:domain] = 'example.com'
-      c[:vm] = { :chef => { :ip => '192.168.23.5' } }
+
+    option :opscode_organization, nil
+    option :opscode_username, -> { username }
+
+    option :chef_server_url, -> {
+      if opscode_organization
+        "https://api.opscode.com/organization/#{opscode_organization}"
+      else
+        "https://chef.#{domain}"
+      end
+    }
+
+    option :chef_username, -> {
+      if opscode_organization
+        opscode_username
+      else
+        username
+      end
+    }
+
+    def self.load!
+      $realm ||= self.new.load!
     end
 
-    def self.path(relative_pathname)
-      File.join(self[:root_dir], relative_pathname)
+    def load!
+      config_files('foundation').
+        each { |cfg_path| load(cfg_path) }
+      self
+    end
+
+    def git
+      @git ||= ::MiniGit.new(root_dir)
+    end
+
+    def username
+      @username ||= git['user.email'].split('@').first
+    end
+
+    def path(relative_pathname)
+      ::File.expand_path(relative_pathname, root_dir)
     end
 
     # Return array of config files present in the repository:
     # - config/basnename.ext
+    # - config/basename/*.ext,
     # - config/basename-*.ext,
-    # - .chef/basename.ext
+    # - .chef/basename/*.ext
     # - .chef/basename-*.ext
-    def self.config_files(basename, ext='.rb')
-      patterns = [ "config/#{basename}#{ext}",
-                   "config/#{basename}-*#{ext}",
-                   ".chef/#{basename}-*#{ext}" ]
-      Dir[ *patterns.map { |fp| path(fp) } ]
+    def config_files(basename, ext='.rb')
+      patterns = [
+        "config/#{basename}#{ext}",
+        "config/#{basename}/*#{ext}",
+        "config/#{basename}-*#{ext}",
+        ".chef/#{basename}/*#{ext}",
+        ".chef/#{basename}-*#{ext}"
+      ]
+      ::Dir[ *patterns.map { |fp| path(fp) } ]
     end
-
-    def self.load!
-      config_files('foundation').each { |cf| from_file(cf) }
-
-      self[:username] ||=
-        Net::SSH::Config.for("whatever.i.#{self[:domain]}")[:user] ||
-        Etc.getlogin
-
-      nil
-    end
-
-    # Load default configuration automagically
-    self.load!
   end
 end
+
+Foundation::Config.load!
