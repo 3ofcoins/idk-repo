@@ -46,5 +46,9 @@ knife[:distro] = 'chef-full'
 
 # Load custom configuration
 _cfg.config_files('knife').each do |config_path|
-  Kernel::eval( File.read(config_path), binding, config_path )
+  begin
+    Kernel::eval( File.read(config_path), binding, config_path )
+  rescue => e
+    warn "WARNING: #{config_path}: #{e}"
+  end
 end
