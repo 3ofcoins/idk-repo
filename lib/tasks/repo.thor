@@ -42,6 +42,16 @@ class Repo < Thor
     knife 'data', 'bag', 'from', 'file', '--all'
   end
 
+  desc 'adduser NAME [-- KNIFE_ARGS ...]', "Create a new Chef user"
+  def adduser(name, *knife_args)
+    require 'securerandom'
+    knife 'user', 'create', '--yes', '--disable-editing',
+          '--password', SecureRandom.base64(129),
+          '--admin',
+          *knife_args,
+          name
+  end
+
   no_tasks do
     def knife(command, *args)
       say_status :knife, "#{command} #{args.join(' ')}"
