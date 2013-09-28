@@ -13,6 +13,7 @@ chef_server_url          $realm.chef_server_url
 node_name                $realm.chef_username
 client_key               $realm.path('.chef/client.pem')
 validation_client_name   "#{$realm.opscode_organization || 'chef-'}-validator"
+validation_key           $realm.path('config/validator.pem')
 cache_type               'BasicFile'
 cache_options            :path => $realm.path(".chef/checksums")
 cookbook_path            [ $realm.path('cookbooks'),
