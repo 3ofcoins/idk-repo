@@ -1,0 +1,10 @@
+*~
+.rake_test_cache
+*.pyc
+/doc/_build
+/.chef
+/.vagrant
+/tmp
+/cache
+.DS_Store
+/.kitchen
