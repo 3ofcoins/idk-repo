@@ -10,7 +10,7 @@ module Foundation
     option :domain
     option :email_domain, -> { domain }
     option :headquarters, -> { "headquarters.#{domain}" }
-
+    option :email_regexp, -> { /@#{Regexp.escape(email_domain)}$/ }
 
     option :opscode_organization, nil
     option :opscode_username, -> { username }
@@ -60,14 +60,36 @@ module Foundation
     # - .chef/basename/*.ext
     # - .chef/basename-*.ext
     def config_files(basename, ext='.rb')
-      patterns = [
-        "config/#{basename}#{ext}",
-        "config/#{basename}/*#{ext}",
-        "config/#{basename}-*#{ext}",
-        ".chef/#{basename}/*#{ext}",
-        ".chef/#{basename}-*#{ext}"
-      ]
-      ::Dir[ *patterns.map { |fp| path(fp) } ]
+      ::Enumerator.new do |out|
+        [
+          "lib/config/#{basename}#{ext}",
+          "lib/config/#{basename}/*#{ext}",
+          "config/#{basename}#{ext}",
+          "config/#{basename}/*#{ext}",
+          "config/#{basename}-*#{ext}",
+          ".chef/#{basename}/*#{ext}",
+          ".chef/#{basename}-*#{ext}"
+        ].each do |glob|
+          ::Dir[path(glob)].each do |file|
+            out << ::File.realpath(file)
+          end
+        end
+      end
+    end
+
+    def configure(other, basename, *skip_files)
+      skip_files = skip_files.map { |sf| ::File.realpath(sf) }
+      config_files(basename).each do |config_path|
+        next if skip_files.include?(config_path)
+        begin
+          config = ::File.read(config_path)
+        rescue => exception
+          ::Kernel.warn "WARNING: can't read #{config_path}: #{exception}"
+        else
+          ::STDERR.puts "DEBUG: loading #{config_path}" if ::ENV['DEBUG']
+          other.instance_eval(config, config_path)
+        end
+      end
     end
   end
 end

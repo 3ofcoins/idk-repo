@@ -15,7 +15,7 @@ class Bootstrap < Thor::Group
 
   def git_config
     until correct?('git config user.email', $realm.git['user.email']) { |val|
-        val && val =~ /@#{Regexp.escape($realm.email_domain)}$/ }
+        val && val =~ $realm.email_regexp }
       $realm.git['user.email'] =
         ask("What is your \"@#{$realm.email_domain}\" email?")
     end

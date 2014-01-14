@@ -4,7 +4,7 @@
 
 libdir = File.dirname(File.dirname(File.realpath(__FILE__)))
 $:.unshift(libdir) unless $:.include?(libdir)
-require 'foundation/config'
+require 'foundation'
 
 # Default configuration
 log_level                :debug
@@ -22,11 +22,4 @@ cookbook_path            [ $realm.path('cookbooks'),
 
 knife[:distro] = 'chef-full'
 
-# Load custom configuration
-$realm.config_files('knife').each do |config_path|
-  begin
-    Kernel::eval( File.read(config_path), binding, config_path )
-  rescue => e
-    warn "WARNING: #{config_path}: #{e}"
-  end
-end
+instance_load_pieces
