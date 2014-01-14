@@ -23,7 +23,7 @@ default_attributes(
     :remove_chef_system_gem => true,
     :cache_dir => '/var/cache/chef' },
   :sanitize => {
-    :keep_access => !::Dir[$realm.path('data_bags/users/*.json')].empty?
+    :keep_access => ::Dir[$realm.path('data_bags/users/*.json')].empty?
   },
   :set_fqdn => "*.#{$realm.domain}")
 
