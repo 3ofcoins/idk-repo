@@ -87,9 +87,14 @@ module Foundation
           ::Kernel.warn "WARNING: can't read #{config_path}: #{exception}"
         else
           ::STDERR.puts "DEBUG: loading #{config_path}" if ::ENV['DEBUG']
-          other.instance_eval(config, config_path)
+          instance_eval_in_method_to_allow_return(other, config, config_path)
         end
       end
+    end
+
+    private
+    def instance_eval_in_method_to_allow_return(other, *args, &block)
+      other.instance_eval(*args, &block)
     end
   end
 end
