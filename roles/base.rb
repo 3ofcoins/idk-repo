@@ -8,7 +8,8 @@ run_list 'recipe[apt]',
          'recipe[sudo]',
          'recipe[users::sysadmins]',
          'recipe[sanitize]',
-         'recipe[hostname]'
+         'recipe[hostname]',
+         'recipe[ufw]'
 
 default_attributes(
   :authorization => {
@@ -23,6 +24,7 @@ default_attributes(
     :remove_chef_system_gem => true,
     :cache_dir => '/var/cache/chef' },
   :sanitize => {
+    :iptables => false,
     :keep_access => ::Dir[$realm.path('data_bags/users/*.json')].empty?
   },
   :set_fqdn => "*.#{$realm.domain}")
