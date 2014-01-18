@@ -1,6 +1,6 @@
 require 'etc'
 require 'minigit'
-require 'tinyconfog'
+require 'tinyconfig'
 
 module IDK
   class Config < TinyConfig
