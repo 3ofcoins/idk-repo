@@ -4,7 +4,7 @@
 
 libdir = File.dirname(File.dirname(File.realpath(__FILE__)))
 $:.unshift(libdir) unless $:.include?(libdir)
-require 'foundation'
+require 'idk/config'
 
 # Default configuration
 log_level                :debug
@@ -22,4 +22,4 @@ cookbook_path            [ $realm.path('cookbooks'),
 
 knife[:distro] = 'chef-full'
 
-instance_load_pieces
+instance_load_config_pieces

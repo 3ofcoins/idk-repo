@@ -1,9 +1,8 @@
 require 'etc'
-
 require 'minigit'
-require 'tinyconfig'
+require 'tinyconfog'
 
-module Foundation
+module IDK
   class Config < TinyConfig
     option :root_dir,
            ::File.realpath(::File.join(::File.dirname(__FILE__), '..', '..'))
@@ -36,7 +35,7 @@ module Foundation
     end
 
     def load!
-      config_files('foundation').
+      config_files('idk').
         each { |cfg_path| load(cfg_path) }
       self
     end
@@ -98,5 +97,3 @@ module Foundation
     end
   end
 end
-
-Foundation::Config.load!

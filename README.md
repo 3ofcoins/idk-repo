@@ -2,8 +2,8 @@
 > straightforward to use as possible, but can't promise anything. You
 > have been warned.
 
-The Foundation Repository
-=========================
+The IDK Repository
+==================
 
 This repository is [Three of Coins'](http://3ofcoins.net/) take on
 a usable base [Chef](http://www.opscode.com/chef/) repository. While
@@ -14,29 +14,22 @@ a running environment, and it's even harder to collect all the
 community software and best practices, and incorporate them by trial
 and error.
 
-The Foundation Repository is an opinionated Chef repo. It includes
+The IDK Repository is an opinionated Chef repo. It includes
 a set of tools, scripts, and cookbooks that we have found to gather
 all over again. Its aim is to provide a ready to use infrastructure
 development environment, already including tools, skeleton setup, and
 instructions to get up and running.
 
-What you need
-=============
+While The IDK Repository may run with manually installed software, it
+is recommended to use
+[Infrastructure Development Kit](https://github.com/3ofcoins/idk/releases)
+as your client software.
 
- - Git
- - Ruby 1.9.3 with Rubygems and Bundler (rvm or rbenv is recommended)
- - VirtualBox and Vagrant
- - [Pygments](http://pygments.org/) (optional, to regenerate documentation)
- - C development environment (to install some of Ruby and Python packages)
- - GNU Autoconf 2.69+ (optional, to regenerate bootstrap configuration
-   script if needed)
+Getting started
+---------------
 
-Once you have these, run the following commands to install all the
-software:
-
-    $ bundle install
-    $ bundle exec thor repo:setup
-
-> This is supposed to get easier over time, as we figure out how to
-> automate installation of the prerequisites.
+Install latest version of
+[the Infrastructure Development Kit](https://github.com/3ofcoins/idk/releases). Run
+`idk setup` to set up IDK itself. Run `thor repo:bootstrap` in this
+repository's checkout to get yourself started.
   

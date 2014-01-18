@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- mode: ruby; coding: utf-8 -*-
 class Bootstrap < Thor::Group
   include Thor::Actions
 
@@ -10,7 +10,7 @@ class Bootstrap < Thor::Group
   end
 
   def configure!
-    require 'foundation/config'
+    require 'idk/config'
   end
 
   def git_config

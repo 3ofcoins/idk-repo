@@ -1,6 +1,6 @@
 module Foundation
   module ConfigureMixin
-    def instance_load_pieces(basename=nil)
+    def instance_load_config_pieces(basename=nil)
       caller = ::Kernel.caller.first.sub(/(:\d+)?(:in .*)?$/, '')
       basename ||= ::File.basename(caller, '.rb')
       $realm.configure(self, basename, caller)
