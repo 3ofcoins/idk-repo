@@ -5,11 +5,11 @@ require 'tinyconfig'
 module IDK
   class Config < TinyConfig
     option :root_dir,
-           ::File.realpath(::File.join(::File.dirname(__FILE__), '..', '..'))
+           ::File.realpath(::File.join(::File.dirname(__FILE__), '..', '..', '..'))
     option :domain
     option :email_domain, -> { domain }
     option :headquarters, -> { "headquarters.#{domain}" }
-    option :email_regexp, -> { /@#{Regexp.escape(email_domain)}$/ }
+    option :email_regexp, -> { /@#{::Regexp.escape(email_domain)}$/ }
 
     option :opscode_organization, nil
     option :opscode_username, -> { username }
