@@ -1,0 +1,16 @@
+# -*- ruby -*-
+require 'fileutils'
+
+module ::Local
+  def self.f_dir(*path)
+    File.join('@FOUNDATION_ROOT@', *path)
+  end
+end
+
+cookbook_path   [ ::Local.f_dir('cookbooks'),
+                  ::Local.f_dir('vendor/cookbooks') ]
+role_path       ::Local.f_dir('roles')
+file_cache_path '@FILE_CACHE_PATH@'
+lockfile        '/var/lock/chef-solo.lock'
+
+::FileUtils.mkdir_p file_cache_path

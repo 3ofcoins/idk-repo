@@ -1,0 +1,23 @@
+require 'bundler/setup'
+require 'rake/clean'
+require 'tmpdir'
+
+AUTOCONF = ENV['AUTOCONF'] || 'autoconf'
+MAKESELF = File.join Bundler.definition.specs["omnibus"][0].gem_dir, 'bin', 'makeself.sh'
+
+CONTENTS = Rake::FileList.new
+CONTENTS.include 'configure', 'install-sh', '*.in'
+
+file 'configure' => ['configure.ac', 'aclocal.m4'] do
+  sh "#{AUTOCONF}"
+end
+
+file 'bootstrap' => CONTENTS do
+  srcdir = Dir.getwd
+  Dir.mktmpdir('bootstrap') do |builddir|
+    cp CONTENTS.map { |f| File.join(srcdir, f) }, builddir
+    sh "#{MAKESELF} #{builddir} bootstrap foundation-bootstrap ./configure"
+  end
+end
+
+task :default => 'bootstrap'
