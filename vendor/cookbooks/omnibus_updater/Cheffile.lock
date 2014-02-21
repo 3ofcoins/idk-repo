@@ -1,0 +1,23 @@
+SITE
+  remote: http://community.opscode.com/api/v1
+  specs:
+    chef_handler (1.1.4)
+    minitest-handler (1.1.2)
+      chef_handler (>= 0.0.0)
+
+PATH
+  remote: ./
+  specs:
+    omnibus_updater (0.2.4)
+
+PATH
+  remote: ./test/kitchen/cookbooks/omnibus_updater_test
+  specs:
+    omnibus_updater_test (0.0.1)
+      minitest-handler (>= 0.0.0)
+      omnibus_updater (>= 0.0.0)
+
+DEPENDENCIES
+  omnibus_updater (>= 0)
+  omnibus_updater_test (>= 0)
+
