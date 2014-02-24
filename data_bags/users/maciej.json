@@ -1,0 +1,14 @@
+{
+  "id": "maciej",
+  "comment": "Maciej Pasternacki",
+  "groups": [ "sysadmin", "docker" ],
+  "nagios": {
+    "email": "maciej@codility.com"
+  },
+  "password": "*NP*",
+  "shell": "/bin/bash",
+  "ssh_keys": [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCdsmI2rn/hecIizo7eJ+WrDSXh8GrAa47sITQ5rE3ew1a5YRlJ2GUUz/S/bT2XFuQii26q0HYLDDYusIaYs5fST3xPObBzxYrtZgqyhV4NzbPWc3MiU91d8czZlseEG1AafwKljfl1uFCsHf27ygd4CwYdg6UBLuCRUQ/2c7/3/Dr1hxC5Jv98zYv4XZMW6jhlPGT3qKKDU8RQSg3UcI4q1Yr1Pxhq4hUyNukYXABA2/F7oPEwPXTyGrnoK9uBDEjn8+piSIJh96q5NTSGQqF2mqeFFV9BABuCbaTz04ugzOqsSvHYif3weTrXqE/oXUctD1+BsmLunxo9mIROPT/B japhy@portinari.lan",
+    "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAFyye5qtX9nQKhcCM+qeV/r9euWoTviDDjF6/K6gqToSnXMseq65wgw9+YKqE02kKGNx/8D5hm3OwPa9G1Spg9/4gH/OcInGFo3fF1YJPwPOYEL+hXGiq9TpZdEJWAXtlmw6uVmmYltJJ5oN0BjLFwl6/cNUZXmD2opCOzLyu0IFFWXkA== maciej@falcor"
+  ]
+}
