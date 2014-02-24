@@ -45,7 +45,7 @@
     "nginx": {
       "locked_version": "2.2.2"
     },
-    "chef-rvm": {
+    "rvm": {
       "locked_version": "0.9.1",
       "git": "git://github.com/fnichol/chef-rvm.git",
       "ref": "87f58d428c160337c1581ed1130a1a53d94e5126"
