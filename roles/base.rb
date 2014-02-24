@@ -19,7 +19,7 @@ default_attributes(
       :passwordless => true}},
   :domain => $realm.domain,
   :omnibus_updater => {
-    :version => '11.8.2',
+    :version => '11.10.4',
     :remove_chef_system_gem => true,
     :cache_dir => '/var/cache/chef' },
   :sanitize => {
