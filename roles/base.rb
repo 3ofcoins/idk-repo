@@ -1,14 +1,16 @@
 name "base"
 description "Base role applied to all nodes."
 
-run_list 'recipe[apt]',
-         'recipe[ohai]',
-         'recipe[omnibus_updater]',
-         'recipe[chef-client::config]',
-         'recipe[sudo]',
-         'recipe[users::sysadmins]',
-         'recipe[sanitize]',
-         'recipe[hostname]'
+run_list *[
+  'role[attributes]',
+  'recipe[apt]',
+  'recipe[ohai]',
+  'recipe[omnibus_updater]',
+  ('recipe[chef-client::config]' unless Chef::Config[:solo]),
+  'recipe[sudo]',
+  'recipe[users::sysadmins]',
+  'recipe[sanitize]',
+  'recipe[hostname]' ].compact
 
 default_attributes(
   :authorization => {
