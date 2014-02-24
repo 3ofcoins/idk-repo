@@ -12,6 +12,9 @@
     "chef-server": {
       "locked_version": "2.0.1"
     },
+    "chef-solo-search": {
+      "locked_version": "0.5.1"
+    },
     "hostname": {
       "locked_version": "0.1.0"
     },
