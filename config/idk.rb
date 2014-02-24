@@ -1,1 +1,2 @@
-domain 'example.com'
+domain 'i.analyticsfire.com'
+email_domain 'analyticsfire.com'
