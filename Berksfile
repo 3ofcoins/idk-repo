@@ -13,3 +13,8 @@ cookbook 'openssh'
 cookbook 'sanitize'
 cookbook 'sudo'
 cookbook 'users'
+
+cookbook 'docker'
+cookbook 'database'
+cookbook 'nginx'
+cookbook 'chef-rvm', github: 'fnichol/chef-rvm'
