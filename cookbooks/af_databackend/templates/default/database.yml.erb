@@ -1,0 +1,10 @@
+# -*- yaml -*-
+
+production:
+  adapter: postgresql
+  encoding: utf8
+  database: afdb
+  pool: 5
+  username: afdb
+  password: <%= node['af']['databackend']['postgresql_password'] %>
+  host: 127.0.0.1

@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+exec 2>&1
+. /usr/local/rvm/environments/ruby-<%= node['af']['databackend']['ruby'] %>
+cd current
+chgrp www-data log/production.log
+chmod g+w log/production.log
+install -d -m 1770 -o root -g www-data public/uploads
+exec chpst -u www-data ./bin/unicorn -E production -o 127.0.0.1 -p <%= node['af']['databackend']['unicorn_port'] %>
