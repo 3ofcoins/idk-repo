@@ -1,0 +1,13 @@
+{
+  "id": "tomasz",
+  "comment": "Tomasz Stachewicz",
+  "groups": [ "sysadmin", "docker" ],
+  "nagios": {
+    "email": "tomasz@analyticsfire.com"
+  },
+  "password": "*NP*",
+  "shell": "/bin/bash",
+  "ssh_keys": [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAtThvoo6IAJvgKPIIiS/dG2GNbyY8iHlU9cYKFrR1mupAUv7xI1glybrzP0+OIdCUdmOBprrrwf0gG+GXdr2ICkkE4xGujnPbelr3FtuOrSaLwBS1kSIP7HLme78zjjrSrhI50WvcxgabJqDHNN5GwNviITAfyDcVBHSJpprIZD0sa5mc0k1fXtpC8i+Zxxk/ptg8VGSwYkoZRZlfPw13sTdB58mbhQZFLuNmL/9zFJSTDEIWHNkapCggO5ei7fI+Vj1J8/P714DGLqiDcrvz3f5/bH6QlYpEv/01QSRo4XV57StZWp84QM01Dd7DxkqSDLntFVeX96rT6bQn+LSAMQ== tomek@tomek-asus",
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDyZhPJEtEpEHU/VtxiKxrDNcj3MfMRKt8myj/Ul0B17LEsjy6DSN5QrRYzM+tnOX/NQ3tLgdDc6Mqagk/bbReFIL5FV1dq6RvtuelJx1zW8fAs152G8C508QPR164mnRyiHEcjwi39nGPZ2gjeeAsEkjcTgOc/bc5F+jm8qwX7Uk3DqprolTJMe9atimL5rteIUJ+AI0qybYRQS8gTKH/yX5GU5mDp+9ouFC/9al4jSql7zGM/t8P81nnAX7LrzSeUQMxK/TGeCpknKA/K28IDXgyqRNF8CEWytffsW/jg9uzBFSe4vbQeGLXVM3WOL/yjMEzt5daO4Zk/KwP8dUv5 tomek@U36SGRebased"
+]}
