@@ -2,7 +2,7 @@ name "base"
 description "Base role applied to all nodes."
 
 run_list *[
-  ( 'recipe[chef-solo-search]' if Chef::Config[:solo] )
+  ( 'recipe[chef-solo-search]' if Chef::Config[:solo] ),
   'role[attributes]',
   'recipe[apt]',
   'recipe[ohai]',
