@@ -7,6 +7,7 @@ cd "$1"
 branch="${2:-master}"
 
 git init
+git annex init
 git remote add 3ofcoins/idk-repo git@github.com:3ofcoins/idk-repo.git
 git fetch 3ofcoins/idk-repo
 git commit --allow-empty -m '(init)'

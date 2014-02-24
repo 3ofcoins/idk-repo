@@ -8,8 +8,7 @@ run_list 'recipe[apt]',
          'recipe[sudo]',
          'recipe[users::sysadmins]',
          'recipe[sanitize]',
-         'recipe[hostname]',
-         'recipe[ufw]'
+         'recipe[hostname]'
 
 default_attributes(
   :authorization => {
