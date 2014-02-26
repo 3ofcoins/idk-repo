@@ -34,6 +34,9 @@ default_attributes(
     :default_settings => {
       :loglevel => 'notice'
     }},
+  :rvm => {
+    :default_ruby => "system"
+  },
   :sanitize => {
     :locale => {
       :available => [ 'pl_PL.UTF-8' ]
