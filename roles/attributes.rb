@@ -35,7 +35,8 @@ default_attributes(
       :loglevel => 'notice'
     }},
   :rvm => {
-    :default_ruby => "system"
+    :default_ruby => "system",
+    # :upgrade => "stable",
   },
   :sanitize => {
     :locale => {
