@@ -1,7 +1,7 @@
 {
   "id": "tomasz",
   "comment": "Tomasz Stachewicz",
-  "groups": [ "sysadmin", "docker" ],
+  "groups": [ "sysadmin" ],
   "nagios": {
     "email": "tomasz@analyticsfire.com"
   },

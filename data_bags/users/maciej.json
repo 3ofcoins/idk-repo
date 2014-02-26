@@ -1,9 +1,9 @@
 {
   "id": "maciej",
   "comment": "Maciej Pasternacki",
-  "groups": [ "sysadmin", "docker" ],
+  "groups": [ "sysadmin" ],
   "nagios": {
-    "email": "maciej@codility.com"
+    "email": "maciej@analyticsfire.com"
   },
   "password": "*NP*",
   "shell": "/bin/bash",
