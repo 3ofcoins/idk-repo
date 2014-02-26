@@ -1,0 +1,13 @@
+{
+  "id": "nick",
+  "comment": "Nick Allen",
+  "groups": [ "sysadmin" ],
+  "nagios": {
+    "email": "nick@analyticsfire.com"
+  },
+  "password": "*NP*",
+  "shell": "/bin/bash",
+  "ssh_keys": [
+    "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAyhZHPKGGIyi1MGuXsaZSPXjFmrCnb5B7L3XcbTm25ew1ETrEViXqzjIX7nuxxbPph2GM9L/lPadJrNMRec72ACIj2IrSZ4Dln2/BJ138mTV19SYlQTEwHkq6O9SNpfSz7cKfCI17zhJ/BZT2AhXRUZpJBzIdEn0vRL2fY6shjZOdBooatby6sNUyvg/ESMeUfh5oMIoObIHERfXUy5jOWjC3bqBzLFje9lJPOPmLFUWmY6Ape9CToSCyi5u5U8Rk4+C8gr/9/5hfxwAq4MfvUKHtk4MEHHovUbIBsmA9oyhuzZ+gKxeLMZ3M19SKkEXppnuILys3o7RUdjwIbAw8hQ== nallen05@gmail.com"
+  ]
+}
