@@ -7,7 +7,7 @@ server {
   client_max_body_size 512M;
 
   auth_basic "restricted";
-  auth_basic_user_file /srv/afdatabackend/htpasswd;
+  auth_basic_user_file /srv/afdatabackend/shared/config/htpasswd;
 
   location @app {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

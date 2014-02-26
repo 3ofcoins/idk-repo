@@ -24,12 +24,16 @@ include_recipe 'rvm::system_install'
 
 rvm_ruby node['af']['databackend']['ruby']
 
-group 'afdb'
+users_manage 'sysadmin::afdb' do
+  search_group 'sysadmin'
+  group_name 'afdb'
+  group_id 901
+end
 
 user 'afdb' do
   group 'afdb'
   home '/srv/afdatabackend'
-  shell '/bin/bash'
+  shell '/bin/false'
 end
 
 db_conn = {
@@ -50,35 +54,63 @@ postgresql_database 'afdb' do
   encoding 'utf8'
 end
 
-directory '/srv/afdatabackend/shared'
-template '/srv/afdatabackend/shared/database.yml' do
+directory "/srv/afdatabackend" do
   owner 'root'
-  group 'www-data'
-  mode '0640'
+  group 'sysadmin'
+  mode '0775'
+  recursive true
 end
 
-_rvm = ". /usr/local/rvm/environments/ruby-#{node['af']['databackend']['ruby']}"
+directory '/srv/afdatabackend/shared/config' do
+  recursive true
+end
 
-deploy_branch '/srv/afdatabackend' do
-  repo 'git@github.com:AnalyticsFire/afdatabackend.git'
-  branch 'master'
-  shallow_clone true
-  action ENV['FORCE_DEPLOY'] ? :force_deploy : :deploy
-  symlinks({})
-  symlink_before_migrate 'database.yml' => 'config/database.yml'
-  environment 'RAILS_ENV' => 'production'
-  migration_command "#{_rvm} ; ./bin/rake assets:precompile RAILS_ENV=production ; ./bin/rake db:migrate RAILS_ENV=production"
-  migrate true
-  before_migrate do
-    execute "set -e -x ; cd #{release_path} ; #{_rvm} ; bundle --deployment --binstubs --quiet --path /srv/afdatabackend/bundle --without development test doc"
+%w[log public/uploads].each do |runtime_writable|
+  directory "/srv/afdatabackend/shared/#{runtime_writable}" do
+    owner 'root'
+    group 'afdb'
+    mode '0770'
+    recursive true
   end
 end
 
-cookbook_file '/srv/afdatabackend/htpasswd' do
+%w[repo shared/bundle shared/bin releases].each do |deploy_writable|
+  directory "/srv/afdatabackend/#{deploy_writable}" do
+    owner 'root'
+    group 'sysadmin'
+    mode '0775'
+    recursive true
+  end
+end
+
+template '/srv/afdatabackend/shared/config/database.yml' do
+  owner 'root'
+  group 'afdb'
+  mode '0640'
+end
+
+cookbook_file '/srv/afdatabackend/shared/config/htpasswd' do
   owner 'root'
   group 'www-data'
   mode 0640
 end
+
+# _rvm = ". /usr/local/rvm/environments/ruby-#{node['af']['databackend']['ruby']}"
+
+# deploy_branch '/srv/afdatabackend' do
+#   repo 'git@github.com:AnalyticsFire/afdatabackend.git'
+#   branch 'master'
+#   shallow_clone true
+#   action ENV['FORCE_DEPLOY'] ? :force_deploy : :deploy
+#   symlinks({})
+#   symlink_before_migrate 'database.yml' => 'config/database.yml'
+#   environment 'RAILS_ENV' => 'production'
+#   migration_command "#{_rvm} ; ./bin/rake assets:precompile RAILS_ENV=production ; ./bin/rake db:migrate RAILS_ENV=production"
+#   migrate true
+#   before_migrate do
+#     execute "set -e -x ; cd #{release_path} ; #{_rvm} ; bundle --deployment --binstubs --quiet --path /srv/afdatabackend/bundle --without development test doc"
+#   end
+# end
 
 template "#{node['nginx']['dir']}/sites-available/afdatabackend" do
   source 'nginx.conf.erb'
@@ -87,7 +119,6 @@ end
 nginx_site "afdatabackend"
 
 runit_service 'afdatabackend' do
-  sv_dir '/srv'
   default_logger true
-  subscribes :restart, 'deploy_branch[/srv/afdatabackend]'
+  subscribes :restart, 'template[/srv/afdatabackend/shared/config/database.yml]'
 end
