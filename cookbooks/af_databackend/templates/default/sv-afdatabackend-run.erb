@@ -3,6 +3,7 @@ set -e
 exec 2>&1
 . /usr/local/rvm/environments/ruby-<%= node['af']['databackend']['ruby'] %>
 cd current
+mkdir -p log ; touch log/production.log
 chgrp www-data log/production.log
 chmod g+w log/production.log
 install -d -m 1770 -o root -g www-data public/uploads

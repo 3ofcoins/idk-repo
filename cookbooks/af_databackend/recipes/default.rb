@@ -67,10 +67,10 @@ deploy_branch '/srv/afdatabackend' do
   symlinks({})
   symlink_before_migrate 'database.yml' => 'config/database.yml'
   environment 'RAILS_ENV' => 'production'
-  migration_command "#{_rvm} ; ./bin/rake db:migrate RAILS_ENV=production"
+  migration_command "#{_rvm} ; ./bin/rake assets:precompile RAILS_ENV=production ; ./bin/rake db:migrate RAILS_ENV=production"
   migrate true
   before_migrate do
-    execute "set -e -x ; cd #{release_path} ; #{_rvm} ; bundle --deployment --binstubs --quiet --path /srv/afdatabackend/bundle --without development test doc ; ./bin/rake assets:precompile"
+    execute "set -e -x ; cd #{release_path} ; #{_rvm} ; bundle --deployment --binstubs --quiet --path /srv/afdatabackend/bundle --without development test doc"
   end
 end
 
