@@ -65,7 +65,7 @@ directory '/srv/afdatabackend/shared/config' do
   recursive true
 end
 
-%w[log public/uploads].each do |runtime_writable|
+%w[log public/uploads public/rollback].each do |runtime_writable|
   directory "/srv/afdatabackend/shared/#{runtime_writable}" do
     owner 'root'
     group 'afdb'
