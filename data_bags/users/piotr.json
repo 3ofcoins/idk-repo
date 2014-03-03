@@ -1,0 +1,13 @@
+{
+  "id": "piotr",
+  "comment": "Piotr Szotkowski",
+  "groups": [ "sysadmin" ],
+  "nagios": {
+    "email": "piotr@analyticsfire.com"
+  },
+  "password": "*NP*",
+  "shell": "/bin/bash",
+  "ssh_keys": [
+    "ssh-dss AAAAB3NzaC1kc3MAAAEBAKYnSqrbqE1c7CXStsH4xpza2CDr9KJ/n9DQKGOWZnGYorstYuaB0FRkZdiZkKohaSOexHbEZt6ZM9muvsOTEDmR6NS3mRwvaRHuw8tPv8nadty42RjPvK9Ut2vCS3WgWKYUOw771IzmCnD3x2NkcH7xnH6Uqr+VCbPK1yS5Guom9pEb4J6IhTMVPK6qQuL3uSYlOBsQKF9j8bCfqLw43UntxiT8HM7KphNiUKYkfyjb+/3R9LD4pcDDi2BLnLmeTT7w37QPvZbadCMjGdgtzKcxB6PNedejP1gx6YXcgzyU4Jq45PBCVR3XjXPdIAutGXATV8ys8yr5XkIC4e9IGVUAAAAVAOqD21XBhCGyzdUJ3y3g0WG+SlI3AAABAEAsArKLjTMDQHtb+nZGURkROwWph/89FPX3s99p/3NA5duWb3Iy61muLvvvXJRMjbJf/LtCpWVpojaK2d+XlW5Ka7mqt0CKydX/o1BVi01h3JfuFwtZ6EB8ue7iNMAJImYXFg/i1bZVtAI6RUD0FSzaDPo5zzg2Sxo7CiYLcwGz22LpNskJULn9y9+y5hL1RKIE/Kepzfzqv4oS0fox/LGLqYgTHA5dGGd4qD4tRJKWAsoR7rc9qX9+UhjgVU/QZIUI7yrrRWwhwkLpTmJcSdIPBaxqW+QijwjHBFIdi4Tu1NT41OmOYzvXe/t95Yxnv4ymMoVLLx7xfNz++A2CVJYAAAEACitSGzAIh37p5TIGNYpRMunkOau+J/AujCmK+NaXPPV/y1jifN7BliLEmegxt+nDlwkObao4oZmoTjykQgDWbCc9GygCNgqrySNLB1RwcpFQs2NwaWIvYGTMi+rA+0ykKUZcDYeh0Q4XeBkGAi0FHTMbyF0imyEQ4o9hmsjPW1/p/Mkyo8WfUtrwVd2IULJCBjYZ+9sHgh60XotmA6yKzwaxl3dhua+YkDdboVooXf6hl0Oef2x3mK92wZmLzFzIEnZidBolHqVEqAkcyzlO2flBcWQRKKlTECqQGZJgdjz/Cd6Fv+s6k9guScpsKrL5O8mwc9AmnHz0uDmvebXWcw== chastell@devielle"
+]}
+
