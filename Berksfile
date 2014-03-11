@@ -19,3 +19,5 @@ cookbook 'docker'
 cookbook 'database'
 cookbook 'nginx'
 cookbook 'rvm', github: 'fnichol/chef-rvm'
+
+cookbook 'git-annex'
