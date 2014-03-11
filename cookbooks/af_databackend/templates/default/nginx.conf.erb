@@ -3,13 +3,19 @@
 server {
   listen 0.0.0.0:80;
   server_name 78.46.63.223;
-  rewrite ^ http://projectx.analyticsfire.com$request_uri permanent;
+  rewrite ^ http<%= 's' if File.exist? '/etc/ssl/private/star_analyticsfire_com.key' %>://projectx.analyticsfire.com$request_uri? permanent;
 }
 
 server {
   listen 0.0.0.0:80;
+  server_name projectx.analyticsfire.com;
 <% if File.exist? '/etc/ssl/private/star_analyticsfire_com.key' -%>  
+  rewrite ^ https://projectx.analyticsfire.com$request_uri? permanent;
+}
+
+server {
   listen 0.0.0.0:443 ssl;
+  server_name projectx.analyticsfire.com;
 
   ssl_certificate_key /etc/ssl/private/star_analyticsfire_com.key;
   ssl_certificate /etc/ssl/certs/star_analyticsfire_com.pem;
