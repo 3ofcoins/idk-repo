@@ -83,6 +83,12 @@ end
   end
 end
 
+file "/srv/afdatabackend/revisions.log" do
+  owner 'root'
+  group 'sysadmin'
+  mode '0660'
+end
+
 template '/srv/afdatabackend/shared/config/database.yml' do
   owner 'root'
   group 'afdb'
@@ -111,6 +117,20 @@ end
 #     execute "set -e -x ; cd #{release_path} ; #{_rvm} ; bundle --deployment --binstubs --quiet --path /srv/afdatabackend/bundle --without development test doc"
 #   end
 # end
+
+# FIXME: separate nginx cookbook
+file '/etc/nginx/conf.d/ssl.conf' do
+  content <<EOF
+ssl_session_cache   shared:SSL:10m;
+ssl_session_timeout 10m;
+ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+ssl_ciphers AES128-GCM-SHA256:ECDHE-RSA-AES128-SHA256:RC4:HIGH:!MD5:!aNULL:!EDH;
+ssl_prefer_server_ciphers on;
+EOF
+  owner 'root'
+  group 'www-data'
+  mode '0640'
+end
 
 template "#{node['nginx']['dir']}/sites-available/afdatabackend" do
   source 'nginx.conf.erb'

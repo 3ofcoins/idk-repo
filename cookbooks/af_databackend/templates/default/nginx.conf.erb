@@ -1,7 +1,21 @@
 # -*- conf -*-
 
 server {
+  listen 0.0.0.0:80;
   server_name 78.46.63.223;
+  rewrite ^ http://projectx.analyticsfire.com$request_uri permanent;
+}
+
+server {
+  listen 0.0.0.0:80;
+<% if File.exist? '/etc/ssl/private/star_analyticsfire_com.key' -%>  
+  listen 0.0.0.0:443 ssl;
+
+  ssl_certificate_key /etc/ssl/private/star_analyticsfire_com.key;
+  ssl_certificate /etc/ssl/certs/star_analyticsfire_com.pem;
+<% end -%>
+
+  server_name projectx.analyticsfire.com;
   root /srv/afdatabackend/current/public;
   try_files $uri/index.html $uri.html $uri @app;
   client_max_body_size 512M;
