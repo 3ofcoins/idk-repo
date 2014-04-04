@@ -30,6 +30,9 @@ Getting started
 
 Install latest version of
 [the Infrastructure Development Kit](https://github.com/3ofcoins/idk/releases). Run
-`idk setup` to set up IDK itself. Run `thor repo:bootstrap` in this
-repository's checkout to get yourself started.
+`idk setup` to set up IDK itself.
+
+Run `thor bootstrap` in this repository's checkout to get yourself
+started. First run will probably fail - get somebody who's already an
+admin to rotate git-annex keys then.
   
