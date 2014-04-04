@@ -73,7 +73,7 @@ module IDK
             if ::File.exist?(file)
               out << ::File.realpath(file)
             else
-              warn "Skipping nonexistent #{file}"
+              ::Kernel.warn "Skipping nonexistent #{file}"
             end
           end
         end
