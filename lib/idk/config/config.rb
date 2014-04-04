@@ -70,7 +70,7 @@ module IDK
           ".chef/#{basename}-*#{ext}"
         ].each do |glob|
           ::Dir[path(glob)].each do |file|
-            if File.exist?(file)
+            if ::File.exist?(file)
               out << ::File.realpath(file)
             else
               warn "Skipping nonexistent #{file}"
