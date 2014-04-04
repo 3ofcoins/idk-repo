@@ -87,10 +87,11 @@ class Bootstrap < Thor::Group
   end
 
   def git_annex
+    $realm.git.annex 'init' unless File.directory?($realm.path('.git/annex'))
     $realm.git['annex.chef-vault-hook'] = 'knife annex'
     $realm.git['remote.origin.annex-ignore'] = 'true'
-    run 'git annex enableremote chef-server'
-    run 'git annex get'
+    $realm.git.annex :enableremote, 'chef-server'
+    $realm.git.annex :get
   end
 
   private

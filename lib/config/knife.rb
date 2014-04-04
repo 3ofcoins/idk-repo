@@ -22,4 +22,18 @@ cookbook_path            [ $realm.path('cookbooks'),
 
 knife[:distro] = 'chef-full'
 
+class Lazy < Delegator
+  def initialize(&block) ; @delegate_sd_block = block ; end
+  def __getobj__ ; @delegate_sd_obj ||= @delegate_sd_block.call ; end
+end
+def Lazy(&block) ; Lazy.new(&block) ; end
+
+knife[:vault_mode] = 'client'
+knife[:vault_admins] = Lazy {
+  Chef::User
+    .list
+    .keys
+    .select { |uname| uname != 'admin' && Chef::User.load(uname).admin }
+}
+
 instance_load_config_pieces
