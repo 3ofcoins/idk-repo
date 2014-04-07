@@ -37,7 +37,7 @@
       "locked_version": "1.7.0"
     },
     "nginx-proxy": {
-      "locked_version": "0.2.0"
+      "locked_version": "0.2.1"
     },
     "docker": {
       "locked_version": "0.33.1"
