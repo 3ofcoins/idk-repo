@@ -6,10 +6,8 @@ hostsfile LWRP
 
 Requirements
 ------------
-- Chef 11 or higher
-- Ruby 1.9.3 or higher
-
-Note: Any of the `1.x.y` series of this cookbook will work with Chef 10 and Ruby 1.8.7.
+- Chef 10 or higher
+- Ruby 1.8.7 or higher
 
 Attributes
 ----------

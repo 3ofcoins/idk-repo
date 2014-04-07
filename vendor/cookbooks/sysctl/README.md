@@ -11,6 +11,8 @@ Platforms
 
 * Debian/Ubuntu
 * RHEL/CentOS
+* Scientific Linux
+* PLD Linux (not tested)
 
 Usage
 =======
@@ -20,8 +22,8 @@ There are two main ways to interact with the cookbook. This is via chef [attribu
 ## Attributes
 
 * node['sysctl']['params'] - A namespace for setting sysctl parameters
-* node['sysctl']['conf_dir']  - Specifies the sysctl.d directory to be used. Defaults on Debian to /etc/sysctl.d, otherwise nil
-* node['sysctl']['allow_sysctl_conf'] - Defaults to false. This will write params to /etc/sysctl.conf directly when set to true.
+* node['sysctl']['conf_dir']  - Specifies the sysctl.d directory to be used. Defaults to /etc/sysctl.d on the Debian and RHEL platform families, otherwise nil
+* node['sysctl']['allow_sysctl_conf'] - Defaults to false.  Using conf_dir is highly recommended. On some platforms that is not supported. For those platforms, set this to true and the cookbook will rewrite the /etc/sysctl.conf file directly with the params provided. Be sure to save any local edits of /etc/sysctl.conf before enabling this to avoid losing them.
 
 ## LWRP
 
@@ -31,6 +33,7 @@ Actions
 
 - apply (default)
 - remove
+- nothing
 
 Attributes
 
@@ -64,24 +67,26 @@ vagrant plugin install vagrant-berkshelf
 ```
 
 Tested with 
-* Vagrant (version 1.2.2)
-* vagrant-berkshelf (1.2.0)
-* vagrant-omnibus (1.0.2)
+* Vagrant (version 1.4.0)
+* vagrant-berkshelf (1.3.5)
+* vagrant-omnibus (1.1.2)
 
-To test we have written tests in [bats](https://github.com/sstephenson/bats) and executed via [test-kitchen](https://github.com/opscode/test-kitchen).
+To test we have written tests in [bats](https://github.com/sstephenson/bats) and executed via [test-kitchen](http://kitchen.ci).
 
 Much of the tooling around this cookbook is exposed via thor and test kitchen, so it is highly recommended to learn more about those tools.
 However, to give a quick glance at how to do some tests, you can execute the following commmands
 
 ```
 bundle install
-bundle exec thor tailor:lint
+bundle exec rubocop
 bundle exec thor foodcritic:lint
 bundle exec kitchen test default-ubuntu-1204
 bundle exec kitchen test default-centos-64
 ```
 
-The above will do ruby style ([tailor](https://github.com/turboladen/tailor)) and cookbook style ([foodcritic](http://acrmp.github.io/foodcritic/)) checks followed by ensuring proper cookbook operation on two separate linux platforms (Ubuntu 12.04 LTS Precise 64-bit and CentOS 6.4). Please run the tests on any pull requests that you are about to submit and write tests for defects or new features to ensure backwards compatibility and a stable cookbook that we can all rely upon.
+The above will do ruby style ([rubocop](https://github.com/bbatsov/rubocop)) and cookbook style ([foodcritic](http://www.foodcritic.io/)) checks followed by ensuring proper cookbook operation on two separate linux platforms (Ubuntu 12.04 LTS Precise 64-bit and CentOS 6.4). Please run the tests on any pull requests that you are about to submit and write tests for defects or new features to ensure backwards compatibility and a stable cookbook that we can all rely upon.
+
+This coobook is also setup to run the style checks while you work via the [guard gem](http://guardgem.org/).
 
 # Links
 

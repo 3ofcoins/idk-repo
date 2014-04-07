@@ -36,12 +36,12 @@ class Manipulator
     @node = node.to_hash
 
     # Fail if no hostsfile is found
-    unless ::File.exists?(hostsfile_path)
-      Chef::Application.fatal! "No hostsfile exists at '#{hostsfile_path}'!"
-    end
+    Chef::Application.fatal! "No hostsfile exists at '#{hostsfile_path}'!" unless ::File.exists?(hostsfile_path)
+    contents = ::File.readlines(hostsfile_path)
 
-    @entries = []
-    collect_and_flatten(::File.readlines(hostsfile_path))
+    @entries = contents.collect do |line|
+      Entry.parse(line) unless line.strip.nil? || line.strip.empty?
+    end.compact
   end
 
   # Return a list of all IP Addresses for this hostsfile.
@@ -70,11 +70,11 @@ class Manipulator
   #   the relative priority of this entry (compared to others)
   def add(options = {})
     @entries << Entry.new(
-      :ip_address => options[:ip_address],
-      :hostname   => options[:hostname],
-      :aliases    => options[:aliases],
-      :comment    => options[:comment],
-      :priority   => options[:priority],
+      :ip_address   => options[:ip_address],
+      :hostname     => options[:hostname],
+      :aliases      => options[:aliases],
+      :comment      => options[:comment],
+      :priority     => options[:priority]
     )
   end
 
@@ -97,13 +97,8 @@ class Manipulator
   # @param (see #add)
   def append(options = {})
     if entry = find_entry_by_ip_address(options[:ip_address])
-      hosts          = normalize(entry.hostname, entry.aliases, options[:hostname], options[:aliases])
-      entry.hostname = hosts.shift
-      entry.aliases  = hosts
-
-      unless entry.comment && options[:comment] && entry.comment.include?(options[:comment])
-        entry.comment = normalize(entry.comment, options[:comment]).join(', ')
-      end
+      entry.aliases = [ entry.aliases, options[:hostname], options[:aliases] ].flatten.compact.uniq
+      entry.comment = [ entry.comment, options[:comment] ].compact.join(', ') unless entry.comment && entry.comment.include?(options[:comment])
     else
       add(options)
     end
@@ -194,44 +189,44 @@ class Manipulator
       @current_sha ||= Digest::SHA512.hexdigest(File.read(hostsfile_path))
     end
 
-    # Normalize the given list of elements into a single array with no nil
-    # values and no duplicate values.
-    #
-    # @param [Object] things
-    #
-    # @return [Array]
-    #   a normalized array of things
-    def normalize(*things)
-      things.flatten.compact.uniq
-    end
-
     # This is a crazy way of ensuring unique objects in an array using a Hash.
     #
     # @return [Array]
     #   the sorted list of entires that are unique
     def unique_entries
+      remove_existing_hostnames
+
       entries = Hash[*@entries.map{ |entry| [entry.ip_address, entry] }.flatten].values
       entries.sort_by { |e| [-e.priority.to_i, e.hostname.to_s] }
     end
 
-    # Takes /etc/hosts file contents and builds a flattened entries
-    # array so that each IP address has only one line and multiple hostnames
-    # are flattened into a list of aliases.
+    # This method ensures that hostnames/aliases and only used once. It
+    # doesn't make sense to allow multiple IPs to have the same hostname
+    # or aliases. This method removes all occurrences of the existing
+    # hostname/aliases from existing records.
     #
-    # @param [Array] contents
-    #   Array of lines from /etc/hosts file
-    def collect_and_flatten(contents)
-      contents.each do |line|
-        entry = Entry.parse(line)
-        next if entry.nil?
+    # This method also intelligently removes any entries that should no
+    # longer exist.
+    def remove_existing_hostnames
+      new_entry = @entries.pop
+      changed_hostnames = [ new_entry.hostname, new_entry.aliases ].flatten.uniq
 
-        append(
-          :ip_address => entry.ip_address,
-          :hostname   => entry.hostname,
-          :aliases    => entry.aliases,
-          :comment    => entry.comment,
-          :priority   => entry.priority,
-        )
-      end
+      @entries = @entries.collect do |entry|
+        entry.hostname = nil if changed_hostnames.include?(entry.hostname)
+        entry.aliases = entry.aliases - changed_hostnames
+
+        if entry.hostname.nil?
+          if entry.aliases.empty?
+            nil
+          else
+            entry.hostname = entry.aliases.shift
+            entry
+          end
+        else
+          entry
+        end
+      end.compact
+
+      @entries << new_entry
     end
 end

@@ -8,6 +8,8 @@ Requirements
 Platforms:
 - RHEL family
 - Debian family
+- Solaris family
+- Gentoo
 
 
 Resources and Providers
@@ -23,6 +25,9 @@ cron_d 'daily-usage-report' do
   user    'appuser'
 end
 ```
+
+Note: This LWRP does not function on Solaris platforms because they do not support running jobs stored in /etc/cron.d.
+
 
 #### Attributes
 * `minute`, `hour`, `day`, `month`, `weekday` - schedule your cron job. These correspond exactly to their equivalents in the crontab file. All default to "*".

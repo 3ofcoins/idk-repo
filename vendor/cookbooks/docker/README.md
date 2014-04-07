@@ -15,16 +15,16 @@ This cookbook was inspired by @thoward's docker-cookbook: https://github.com/tho
 ### Platforms
 
 * CentOS 6
-* Debian 7 (experimental)
+* Debian 7
 * Fedora 19
 * Fedora 20
 * Mac OS X (only docker installation currently)
-* Oracle 6 (experimental)
+* Oracle 6
 * RHEL 6
 * Ubuntu 12.04
 * Ubuntu 12.10
 * Ubuntu 13.04
-* Ubuntu 13.10 (experimental)
+* Ubuntu 13.10
 
 ### Cookbooks
 
@@ -37,10 +37,44 @@ This cookbook was inspired by @thoward's docker-cookbook: https://github.com/tho
 
 Third-Party Cookbooks
 
+* [aufs](https://github.com/bflad/chef-aufs)
+* [device-mapper](https://github.com/bflad/chef-device-mapper)
 * [golang](https://github.com/NOX73/chef-golang)
 * [lxc](https://github.com/hw-cookbooks/lxc)
 * [modules](https://github.com/Youscribe/modules-cookbook)
 * [sysctl](https://github.com/onehealth-cookbooks/sysctl)
+
+## Usage
+
+### Default Installation
+
+* Add `recipe[docker]` to your node's run list
+
+### Execution Drivers
+
+If your system is runs a Docker version before 0.9, you'll need to explicitly set up LXC outside of this cookbook. This will likely be true for most distros after Docker 1.0 and chef-docker 1.0 is released.
+* [lxc on community site](http://community.opscode.com/cookbooks/lxc)
+* [lxc on Github](https://github.com/hw-cookbooks/lxc/)
+
+### Storage Drivers
+
+Beginning in chef-docker 1.0, storage driver installation and configuration is expected to be handled before this cookbook's execution, except where required by Docker.
+
+#### AUFS
+
+If you need AUFS support, consider adding the aufs cookbook to your node/recipe before docker.
+* [aufs on community site](http://community.opscode.com/cookbooks/aufs)
+* [chef-aufs on Github](https://github.com/bflad/chef-aufs)
+
+Then, set the `storage_driver` attribute of this cookbook to `aufs`.
+
+#### device-mapper
+
+If you need device-mapper support, consider adding the device-mapper cookbook to your node/recipe before docker.
+* [device-mapper on community site](http://community.opscode.com/cookbooks/device-mapper)
+* [chef-device-mapper on Github](https://github.com/bflad/chef-device-mapper)
+
+Then, set the `storage_driver` attribute of this cookbook to `devicemapper` (please note lack of dash).
 
 ## Attributes
 
@@ -52,19 +86,26 @@ arch | Architecture for docker binary (note: Docker only currently supports x86_
 bind_socket | Socket path that docker should bind | String | unix:///var/run/docker.sock
 bind_uri | TCP URI docker should bind | String | nil
 container_cmd_timeout | container LWRP default cmd_timeout seconds | Fixnum | 60
-container_init_type | Init type for docker containers (nil, "systemd", or "upstart") | NilClass or String | `node['docker']['init_type']`
+container_dns | container LWRP default DNS server(s) | String, Array | nil
+container_dns_search | container LWRP default DNS search domain(s) | String, Array | nil
+container_init_type | Init type for docker containers (nil, "runit", "systemd", or "upstart") | NilClass or String | `node['docker']['init_type']`
 docker_daemon_timeout | Timeout to wait for the docker daemon to start in seconds | Fixnum | 10
+exec_driver | Execution driver for docker (nil, "lxc", or "native") | String | nil (implicitly native as of 0.9.0)
+group | Group for docker socket and group_members | String | nil (implicitly docker)
 group_members | Manage docker group members | Array of Strings | []
 http_proxy | HTTP_PROXY environment variable | String | nil
 image_cmd_timeout | image LWRP default cmd_timeout seconds | Fixnum | 300
-init_type | Init type for docker ("systemd", "sysv", or "upstart") | String | auto-detected (see attributes/default.rb)
+init_type | Init type for docker ("runit", "systemd", "sysv", or "upstart") | String | auto-detected (see attributes/default.rb)
 install_dir | Installation directory for docker binary | String | auto-detected (see attributes/default.rb)
 install_type | Installation type for docker ("binary", "package" or "source") | String | "package"
+logfile | Set custom DOCKER_LOGFILE | String | nil
 options | Additional options to pass to docker. These could be flags like "-api-enable-cors". | String | nil
+pidfile | Set custom DOCKER_PIDFILE | String | nil
+ramdisk | Set DOCKER_RAMDISK when using RAM disk | TrueClass or FalseClass | false
 registry_cmd_timeout | registry LWRP default cmd_timeout seconds | Fixnum | 60
-storage_type | Storage driver for docker (nil, "aufs", or "devmapper") | String | auto-detected (see attributes/default.rb)
+storage_driver | Storage driver for docker (nil, "aufs", or "devicemapper") | String | auto-detected (see attributes/default.rb)
+tmpdir | TMPDIR environment variable | String | nil
 version | Version of docker | String | nil
-virtualization_type | Virtualization driver for docker (nil or "lxc") | String | auto-detected (see attributes/default.rb)
 
 ### Binary Attributes
 
@@ -99,10 +140,11 @@ url | Repository URL for docker source | String | "https://github.com/dotcloud/d
 * `recipe[docker::aufs]` Installs/Loads AUFS Linux module
 * `recipe[docker::binary]` Installs Docker binary
 * `recipe[docker::cgroups]` Installs/configures default platform Control Groups support
-* `recipe[docker::devmapper]` Installs/Configures Device Mapper
+* `recipe[docker::devicemapper]` Installs/Configures Device Mapper
 * `recipe[docker::group]` Installs/Configures docker group
 * `recipe[docker::lxc]` Installs/configures default platform LXC support
 * `recipe[docker::package]` Installs Docker via package
+* `recipe[docker::runit]` Installs/Starts Docker via runit
 * `recipe[docker::source]` Installs Docker via source
 * `recipe[docker::systemd]` Installs/Starts Docker via systemd
 * `recipe[docker::sysv]` Installs/Starts Docker via SysV
@@ -331,7 +373,8 @@ container_name | Name for container/service | String | nil
 cookbook | Cookbook to grab any templates | String | docker
 cpu_shares | CPU shares for container | Fixnum | nil
 detach | Detach from container when starting | TrueClass, FalseClass | nil
-dns | DNS servers for container | String, Array | nil
+dns | DNS servers for container | String, Array | `node['docker']['container_dns']`
+dns_search | DNS search domains for container | String, Array | `node['docker']['container_dns_search']`
 entrypoint | Overwrite the default entrypoint set by the image | String | nil
 env | Environment variables to pass to container | String, Array | nil
 expose | Expose a port from the container without publishing it to your host | Fixnum, String, Array | nil
@@ -340,8 +383,11 @@ image | Image for container | String | LWRP name
 init_type | Init type for container service handling | FalseClass, String | `node['docker']['container_init_type']`
 init_template | Template to use for init configuration | String | nil
 link | Add link to another container | String, Array | nil
+label | Options to pass to underlying labeling system | String | nil
 lxc_conf | Custom LXC options | String, Array | nil
 memory | Set memory limit for container | Fixnum | nil
+networking | Configure networking for container | TrueClass, FalseClass | true
+opt | Custom driver options | String, Array | nil
 port | Map network port(s) to the container | Fixnum (*DEPRECATED*), String, Array | nil
 privileged | Give extended privileges | TrueClass, FalseClass | nil
 public_port (*DEPRECATED*) | Map host port to container | Fixnum | nil
@@ -686,12 +732,6 @@ Log into private registry with optional port:
       username 'privateme'
       password 'still_hope_this_is_in_encrypted_databag'
     end
-
-## Usage
-
-### Default Installation
-
-* Add `recipe[docker]` to your node's run list
 
 ## Testing and Development
 

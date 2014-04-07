@@ -3,15 +3,13 @@ include Helpers::Docker
 def load_current_resource
   @current_resource = Chef::Resource::DockerContainer.new(new_resource)
   wait_until_ready!
-  dps = docker_cmd!('ps -a -notrunc')
-  dps.stdout.each_line do |dps_line|
-    ps = dps(dps_line)
+  docker_containers.each do |ps|
     unless container_id_matches?(ps['id'])
       next unless container_image_matches?(ps['image'])
       next unless container_command_matches_if_exists?(ps['command'])
       next unless container_name_matches_if_exists?(ps['names'])
     end
-    Chef::Log.debug('Matched docker container: ' + dps_line.squeeze(' '))
+    Chef::Log.debug('Matched docker container: ' + ps['line'].squeeze(' '))
     @current_resource.container_name(ps['names'])
     @current_resource.created(ps['created'])
     @current_resource.id(ps['id'])
@@ -117,7 +115,7 @@ end
 def commit
   commit_args = cli_args(
     'author' => new_resource.author,
-    'm' => new_resource.message,
+    'message' => new_resource.message,
     'run' => new_resource.run
   )
   commit_end_args = ''
@@ -129,8 +127,11 @@ def commit
 end
 
 def container_command_matches_if_exists?(command)
-  return false if new_resource.command && !command.include?(new_resource.command)
-  true
+  return true if new_resource.command.nil?
+  # try the exact command but also the command with the ' and " stripped out, since docker will
+  # sometimes strip out quotes.
+  subcommand = new_resource.command.gsub(/['"]/, '')
+  command.include?(new_resource.command) || command.include?(subcommand)
 end
 
 def container_id_matches?(id)
@@ -158,21 +159,63 @@ def cp
   docker_cmd!("cp #{current_resource.id}:#{new_resource.source} #{new_resource.destination}")
 end
 
-def dps(dps_line)
-  split_line = dps_line.split(/\s\s+/)
-  ps = {}
-  ps['id'] = split_line[0]
-  ps['image'] = split_line[1]
-  ps['command'] = split_line[2]
-  ps['created'] = split_line[3]
-  ps['status'] = split_line[4]
-  if split_line[6]
-    ps['ports'] = split_line[5]
-    ps['names'] = split_line[6]
+# Helper method for `docker_containers` that looks at the position of the headers in the output of
+# `docker ps` to figure out the span of the data for each column within a row. This information is
+# stored in the `ranges` hash, which is returned at the end.
+def get_ranges(header)
+  container_id_index = 0
+  image_index = header.index('IMAGE')
+  command_index = header.index('COMMAND')
+  created_index = header.index('CREATED')
+  status_index = header.index('STATUS')
+  ports_index = header.index('PORTS')
+  names_index = header.index('NAMES')
+
+  ranges = {
+    :id => [container_id_index, image_index],
+    :image => [image_index, command_index],
+    :command => [command_index, created_index],
+    :created => [created_index, status_index]
+  }
+  if ports_index > 0
+    ranges[:status] = [status_index, ports_index]
+    ranges[:ports] = [ports_index, names_index]
   else
-    ps['names'] = split_line[5]
+    ranges[:status] = [status_index, names_index]
   end
-  ps
+  ranges[:names] = [names_index]
+  ranges
+end
+
+#
+# Get a list of all docker containers by parsing the output of `docker ps -a -notrunc`.
+#
+# Uses `get_ranges` to determine where column data is within each row. Then, for each line after
+# the header, a hash is build up with the values for each of the columns. A special 'line' entry
+# is added to the hash for the raw line of the row.
+#
+# The array of hashes is returned.
+def docker_containers
+  dps = docker_cmd!('ps -a -notrunc')
+
+  lines = dps.stdout.lines.to_a
+  ranges = get_ranges(lines[0])
+
+  lines[1, lines.length].map do |line|
+    ps = { 'line' => line }
+    [:id, :image, :command, :created, :status, :ports, :names].each do |name|
+      if ranges.key?(name)
+        start = ranges[name][0]
+        if ranges[name].length == 2
+          finish = ranges[name][1]
+        else
+          finish = line.length
+        end
+        ps[name.to_s] = line[start..finish - 1].strip
+      end
+    end
+    ps
+  end
 end
 
 def command_timeout_error_message
@@ -214,6 +257,7 @@ end
 
 def remove
   rm_args = cli_args(
+    'force' => new_resource.force,
     'link' => new_resource.link
   )
   docker_cmd!("rm #{rm_args} #{current_resource.id}")
@@ -228,36 +272,42 @@ def restart
   end
 end
 
+# rubocop:disable MethodLength
 def run
   run_args = cli_args(
-    'c' => new_resource.cpu_shares,
+    'cpu-shares' => new_resource.cpu_shares,
     'cidfile' => cidfile,
-    'd' => new_resource.detach,
-    'dns' => [*new_resource.dns],
-    'e' => [*new_resource.env],
+    'detach' => new_resource.detach,
+    'dns' => Array(new_resource.dns),
+    'dns-search' => Array(new_resource.dns_search),
+    'env' => Array(new_resource.env),
     'entrypoint' => new_resource.entrypoint,
-    'expose' => [*new_resource.expose],
-    'h' => new_resource.hostname,
-    'i' => new_resource.stdin,
-    'link' => [*new_resource.link],
-    'lxc-conf' => [*new_resource.lxc_conf],
-    'm' => new_resource.memory,
+    'expose' => Array(new_resource.expose),
+    'hostname' => new_resource.hostname,
+    'interactive' => new_resource.stdin,
+    'label' => new_resource.label,
+    'link' => Array(new_resource.link),
+    'lxc-conf' => Array(new_resource.lxc_conf),
+    'memory' => new_resource.memory,
+    'networking' => new_resource.networking,
     'name' => container_name,
-    'p' => [*port],
-    'P' => new_resource.publish_exposed_ports,
+    'opt' => Array(new_resource.opt),
+    'publish' => Array(port),
+    'publish-all' => new_resource.publish_exposed_ports,
     'privileged' => new_resource.privileged,
     'rm' => new_resource.remove_automatically,
-    't' => new_resource.tty,
-    'u' => new_resource.user,
-    'v' => [*new_resource.volume],
+    'tty' => new_resource.tty,
+    'user' => new_resource.user,
+    'volume' => Array(new_resource.volume),
     'volumes-from' => new_resource.volumes_from,
-    'w' => new_resource.working_directory
+    'workdir' => new_resource.working_directory
   )
   dr = docker_cmd!("run #{run_args} #{new_resource.image} #{new_resource.command}")
   dr.error!
   new_resource.id(dr.stdout.chomp)
   service_create if service?
 end
+# rubocop:enable MethodLength
 
 def running?
   @current_resource.status.include?('Up') if @current_resource.status
@@ -268,26 +318,46 @@ def service?
 end
 
 def service_action(actions)
-  service service_name do
-    case new_resource.init_type
-    when 'systemd'
-      provider Chef::Provider::Service::Systemd
-    when 'upstart'
-      provider Chef::Provider::Service::Upstart
+  if new_resource.init_type == 'runit'
+    runit_service service_name do
+      run_template_name 'docker-container'
+      action actions
     end
-    supports :status => true, :restart => true, :reload => true
-    action actions
+  else
+    service service_name do
+      case new_resource.init_type
+      when 'systemd'
+        provider Chef::Provider::Service::Systemd
+      when 'upstart'
+        provider Chef::Provider::Service::Upstart
+      end
+      supports :status => true, :restart => true, :reload => true
+      action actions
+    end
   end
 end
 
 def service_create
   case new_resource.init_type
+  when 'runit'
+    service_create_runit
   when 'systemd'
     service_create_systemd
   when 'sysv'
     service_create_sysv
   when 'upstart'
     service_create_upstart
+  end
+end
+
+def service_create_runit
+  runit_service service_name do
+    cookbook new_resource.cookbook
+    default_logger true
+    options(
+      'service_name' => service_name
+    )
+    run_template_name service_template
   end
 end
 
@@ -365,6 +435,8 @@ end
 
 def service_remove
   case new_resource.init_type
+  when 'runit'
+    service_remove_runit
   when 'systemd'
     service_remove_systemd
   when 'sysv'
@@ -374,10 +446,16 @@ def service_remove
   end
 end
 
+def service_remove_runit
+  runit_service service_name do
+    action :disable
+  end
+end
+
 def service_remove_systemd
   service_action([:stop, :disable])
 
-  %w{service socket}.each do |f|
+  %w(service socket).each do |f|
     file "/usr/lib/systemd/system/#{service_name}.#{f}" do
       action :delete
     end
@@ -415,6 +493,8 @@ end
 def service_template
   return new_resource.init_template unless new_resource.init_template.nil?
   case new_resource.init_type
+  when 'runit'
+    'docker-container'
   when 'systemd'
     'docker-container.service.erb'
   when 'upstart'
@@ -431,8 +511,8 @@ end
 
 def start
   start_args = cli_args(
-    'a' => new_resource.attach,
-    'i' => new_resource.stdin
+    'attach' => new_resource.attach,
+    'interactive' => new_resource.stdin
   )
   if service?
     service_create
@@ -443,7 +523,7 @@ end
 
 def stop
   stop_args = cli_args(
-    't' => new_resource.cmd_timeout
+    'time' => new_resource.cmd_timeout
   )
   if service?
     service_stop

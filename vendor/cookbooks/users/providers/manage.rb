@@ -18,6 +18,8 @@
 # limitations under the License.
 #
 
+use_inline_resources if defined?(use_inline_resources)
+
 def whyrun_supported?
   true
 end
@@ -43,7 +45,6 @@ action :remove do
         action :remove
       end
     end
-    new_resource.updated_by_last_action(true)
   end
 end
 
@@ -63,12 +64,20 @@ action :create do
         end
       end
 
+      # Set home_basedir based on platform_family
+      case node['platform_family']
+      when 'mac_os_x'
+          home_basedir = '/Users'
+      when 'debian', 'rhel', 'fedora', 'arch', 'suse', 'freebsd'
+          home_basedir = '/home' 
+      end
+
       # Set home to location in data bag,
-      # or a reasonable default (/home/$user).
+      # or a reasonable default ($home_basedir/$user).
       if u['home']
         home_dir = u['home']
       else
-        home_dir = "/home/#{u['username']}"
+        home_dir = "#{home_basedir}/#{u['username']}"
       end
 
       # The user block will fail if the group does not yet exist.
@@ -99,12 +108,14 @@ action :create do
         action u['action'] if u['action']
       end
 
-      if home_dir != "/dev/null"
-        directory "#{home_dir}/.ssh" do
-          owner u['username']
-          group u['gid'] || u['username']
-          mode "0700"
-        end
+	if home_dir != "/dev/null"
+	  converge_by("would create #{home_dir}/.ssh") do
+	    directory "#{home_dir}/.ssh" do
+	      owner u['username']
+	      group u['gid'] || u['username']
+	      mode "0700"
+	  end
+	end
 
         if u['ssh_keys']
           template "#{home_dir}/.ssh/authorized_keys" do
@@ -150,5 +161,4 @@ action :create do
     end
     members security_group
   end
-  new_resource.updated_by_last_action(true)
 end
