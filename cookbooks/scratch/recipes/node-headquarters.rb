@@ -20,5 +20,5 @@ end
 
 nginx_proxy 'chef-api.analyticsfire.com' do
   ssl_key 'star.analyticsfire.com'
-  port 4000
+  url 'https://127.0.0.1:4000'
 end
