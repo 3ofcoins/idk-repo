@@ -1,0 +1,4 @@
+rubocop: rubocop $COOKBOOK
+knife test: knife cookbook test $COOKBOOK
+foodcritic: foodcritic --tags ~FC015 --epic-fail any $SANDBOX/$COOKBOOK
+chefspec: cd $SANDBOX/$COOKBOOK && rspec --backtrace --fail-fast

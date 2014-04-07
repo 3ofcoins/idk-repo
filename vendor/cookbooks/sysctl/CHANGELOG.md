@@ -1,6 +1,22 @@
+## v0.3.5
+
+* Scientific Linux 6 support confirmed
+* [GH-16] Document and test lwrp action :nothing
+* Update to test kitchen 1.1
+* Update to vagrant 1.4
+* Added CentOS 5.10 and 6.5 test boxes
+
+## v0.3.4
+
+* [GH-9] Make changes available immediately (Warren Vosper)
+* [GH-8] Added PLD Linux support (not regularily tested) (Elan Ruusam?e)
+* Switch to rubocop over tailor
+* Modernize Gemfile dependencies and add Guard for development
+* Fix FC048: Prefer Mixlib::ShellOut
+
 ## v0.3.3
 
-* more explicitly define conflicting cookbooks and operating systems in metadata.rb
+* More explicitly define conflicting cookbooks and operating systems in metadata.rb
 * [GH-6] Fixed any params with spaces throw errors (Mike Pavlenko)
 
 ## v0.3.2

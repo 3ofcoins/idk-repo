@@ -105,7 +105,7 @@ def build
   build_args = cli_args(
     'no-cache' => new_resource.no_cache,
     'rm' => new_resource.rm,
-    't' => full_image_name
+    'tag' => full_image_name
   )
 
   # DEPRECATED: support for dockerfile, image_url, and path attributes
@@ -195,7 +195,7 @@ end
 def pull
   pull_args = cli_args(
     'registry' => new_resource.registry,
-    't' => new_resource.tag
+    'tag' => new_resource.tag
   )
   docker_cmd!("pull #{pull_args} #{new_resource.image_name}")
 end
@@ -205,9 +205,12 @@ def push
 end
 
 def remove
+  remove_args = cli_args(
+    'force' => new_resource.force
+  )
   image_name = new_resource.image_name
   image_name = "#{image_name}:#{new_resource.tag}" if new_resource.tag
-  docker_cmd!("rmi #{image_name}")
+  docker_cmd!("rmi #{remove_args} #{image_name}")
 end
 
 def repository_and_tag_args
@@ -225,7 +228,7 @@ end
 
 def tag
   tag_args = cli_args(
-    'f' => new_resource.force
+    'force' => new_resource.force
   )
   docker_cmd!("tag #{tag_args} #{new_resource.image_name} #{repository_and_tag_args}")
 end

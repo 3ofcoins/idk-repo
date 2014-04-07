@@ -29,9 +29,9 @@ end
 def check_inputs(user, group, foreign_template, foreign_vars)
   # if group, user, and template are nil, throw an exception
   if user.nil? && group.nil? && foreign_template.nil?
-    Chef::Application.fatal!('You must provide a user, group, or template!')
+    fail 'You must provide a user, group, or template!'
   elsif !user.nil? && !group.nil? && !template.nil?
-    Chef::Application.fatal!('You cannot specify user, group, and template!')
+    fail 'You cannot specify user, group, and template!'
   end
 end
 
@@ -66,10 +66,10 @@ def render_sudoer
   if new_resource.template
     Chef::Log.debug('Template attribute provided, all other attributes ignored.')
 
-    resource = template "/etc/sudoers.d/#{new_resource.name}" do
+    resource = template "#{node['authorization']['sudo']['prefix']}/sudoers.d/#{new_resource.name}" do
       source        new_resource.template
       owner         'root'
-      group         'root'
+      group         node['root_group']
       mode          '0440'
       variables     new_resource.variables
       action        :nothing
@@ -77,17 +77,18 @@ def render_sudoer
   else
     sudoer = new_resource.user || "%#{new_resource.group}".squeeze('%')
 
-    resource = template "/etc/sudoers.d/#{new_resource.name}" do
+    resource = template "#{node['authorization']['sudo']['prefix']}/sudoers.d/#{new_resource.name}" do
       source        'sudoer.erb'
       cookbook      'sudo'
       owner         'root'
-      group         'root'
+      group         node['root_group']
       mode          '0440'
       variables     :sudoer => sudoer,
                     :host => new_resource.host,
                     :runas => new_resource.runas,
                     :nopasswd => new_resource.nopasswd,
-                    :commands => new_resource.commands
+                    :commands => new_resource.commands,
+                    :defaults => new_resource.defaults
       action        :nothing
     end
   end
@@ -96,17 +97,22 @@ def render_sudoer
   validate_fragment!(resource)
 
   resource.run_action(:create)
-  new_resource.updated_by_last_action(true) if resource.updated_by_last_action?
+
+  # Return whether the resource was updated so we can notify in the action
+  resource.updated_by_last_action?
 end
 
 # Default action - install a single sudoer
 action :install do
-  render_sudoer
+  sudoers_dir = directory "#{node['authorization']['sudo']['prefix']}/sudoers.d/"
+  sudoers_dir.run_action(:create)
+
+  new_resource.updated_by_last_action(true) if render_sudoer
 end
 
 # Removes a user from the sudoers group
 action :remove do
-  resource = file "/etc/sudoers.d/#{new_resource.name}" do
+  resource = file "#{node['authorization']['sudo']['prefix']}/sudoers.d/#{new_resource.name}" do
     action :nothing
   end
   resource.run_action(:delete)
@@ -114,23 +120,24 @@ action :remove do
 end
 
 private
-  # Capture a template to a string
-  def capture(template)
-    context = {}
-    context.merge!(template.variables)
-    context[:node] = node
 
-    eruby = Erubis::Eruby.new(::File.read(template_location(template)))
-    eruby.evaluate(context)
-  end
+# Capture a template to a string
+def capture(template)
+  context = {}
+  context.merge!(template.variables)
+  context[:node] = node
 
-  # Find the template
-  def template_location(template)
-    if template.local
-      template.source
-    else
-      context = template.instance_variable_get('@run_context')
-      cookbook = context.cookbook_collection[template.cookbook || template.cookbook_name]
-      cookbook.preferred_filename_on_disk_location(node, :templates, template.source)
-    end
+  eruby = Erubis::Eruby.new(::File.read(template_location(template)))
+  eruby.evaluate(context)
+end
+
+# Find the template
+def template_location(template)
+  if template.local
+    template.source
+  else
+    context = template.instance_variable_get('@run_context')
+    cookbook = context.cookbook_collection[template.cookbook || template.cookbook_name]
+    cookbook.preferred_filename_on_disk_location(node, :templates, template.source)
   end
+end

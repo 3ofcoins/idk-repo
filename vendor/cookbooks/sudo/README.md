@@ -81,6 +81,14 @@ node.default['authorization']['sudo']['sudoers_defaults'] = [
 ]
 ```
 
+*FreeBSD*
+```ruby
+node.default['authorization']['sudo']['sudoers_defaults'] = [
+  'env_reset',
+  'secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"'
+]
+```
+
 *RHEL family 5.x*
 The version of sudo in RHEL 5 may not support `+=`, as used in `env_keep`, so its a single string.
 
@@ -110,6 +118,24 @@ node.default['authorization']['sudo']['sudoers_defaults'] = [
   'env_keep += "HOME"',
   'always_set_home',
   'secure_path = /sbin:/bin:/usr/sbin:/usr/bin'
+]
+```
+
+*Mac OS X*
+```ruby
+node.default['authorization']['sudo']['sudoers_defaults'] = [
+  'env_reset',
+  'env_keep += "BLOCKSIZE"',
+  'env_keep += "COLORFGBG COLORTERM"',
+  'env_keep += "__CF_USER_TEXT_ENCODING"',
+  'env_keep += "CHARSET LANG LANGUAGE LC_ALL LC_COLLATE LC_CTYPE"',
+  'env_keep += "LC_MESSAGES LC_MONETARY LC_NUMERIC LC_TIME"',
+  'env_keep += "LINES COLUMNS"',
+  'env_keep += "LSCOLORS"',
+  'env_keep += "TZ"',
+  'env_keep += "DISPLAY XAUTHORIZATION XAUTHORITY"',
+  'env_keep += "EDITOR VISUAL"',
+  'env_keep += "HOME MAIL"'
 ]
 ```
 
@@ -204,6 +230,12 @@ case it is not already</td>
       <td>user</td>
       <td>user to provide sudo privileges to</td>
       <td><tt>tomcat</tt></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>defaults</td>
+      <td>array of defaults this user has</td>
+      <td><tt>['!requiretty','env_reset']</tt></td>
       <td></td>
     </tr>
     <tr>

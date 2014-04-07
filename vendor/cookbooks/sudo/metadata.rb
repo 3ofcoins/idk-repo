@@ -3,11 +3,11 @@ maintainer        'Opscode, Inc.'
 maintainer_email  'cookbooks@opscode.com'
 license           'Apache 2.0'
 description       'Installs sudo and configures /etc/sudoers'
-version           '2.2.2'
+version           '2.5.2'
 
 recipe 'sudo', 'Installs sudo and configures /etc/sudoers'
 
-%w(redhat centos fedora ubuntu debian freebsd).each do |os|
+%w(redhat centos fedora ubuntu debian freebsd mac_os_x).each do |os|
   supports os
 end
 

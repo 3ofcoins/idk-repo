@@ -1,3 +1,91 @@
+## 1.0.0 (unreleased)
+
+It appears we're getting close to Docker 1.0, which will mean a 1.0 release of the cookbook that removes any attribute deprecations and *removes built-in recipes for exec_driver (such as LXC) and storage_driver (such as AUFS/devicemapper)*. I originally added these to this cookbook to help everyone get started, but the logic for them is beyond the scope of managing Docker and now Docker uses a native execution driver. I won't leave you stranded though as I'll try to get current LXC/filesystem features pulled into existing community cookbooks or create new ones with sufficient documentation in the README.
+
+Recipe deprecations so you can be sure you can upgrade (*please check linked issues for current status*):
+
+* [#88][]: Migrate AUFS logic to separate cookbook
+* [#89][]: Migrate cgroups logic to separate cookbook
+* [#90][]: Migrate devicemapper logic to separate cookbook
+* [#91][]: Migrate LXC logic to separate cookbook
+
+Attribute deprecations so you can be sure you can upgrade:
+
+* storage_type attribute renamed to storage_driver
+* virtualization_type attribute renamed to exec_driver
+* image LWRP dockerfile, image_url, and path attributes replaced with source attribute
+* container LWRP Fixnum port attribute: use full String notation from Docker documentation in port attribute instead
+* container LWRP public_port attribute: use port attribute instead
+
+## 0.33.1
+
+* Bugfix: [#112][]: Defines runner methods for ChefSpec matchers
+* Bugfix: [#113][]: [D-15] Fedora 19 installs Docker 0.8.1, does not have the -G or -e flag
+
+## 0.33.0
+
+This release deprecates AUFS/device-mapper handling from chef-docker, but provides backwards compatibility by still including the default recipe of the new cookbooks. Please update your dependencies, Github watching/issues, and recipes to reflect the two new community cookbooks:
+* aufs: [aufs on community site](http://community.opscode.com/cookbooks/aufs) / [chef-aufs on Github](https://github.com/bflad/chef-aufs)
+* device-mapper: [device-mapper on community site](http://community.opscode.com/cookbooks/device-mapper) / [chef-device-mapper on Github](https://github.com/bflad/chef-device-mapper)
+
+* Bugfix: [#109][]: Remove on lxc-net start from docker Upstart
+* Enhancement: [#88][]: Migrate AUFS logic to separate cookbook
+* Enhancement: [#90][]: Migrate device-mapper logic to separate cookbook
+* Enhancement: [#110][]: Add docker Upstart pre-start script and limits configuration
+* Enhancement: [#105][]: Add --label for docker run
+* Enhancement: [#106][]: Add --opt for docker run
+* Enhancement: [#107][]: Add --networking for docker run
+* Enhancement: [#108][]: Add --dns-search for docker run
+* Enhancement: [#104][]: Add TMPDIR
+* Enhancement: [#111][]: Add DOCKER_LOGFILE configuration
+* Enhancement: container_dns* attributes to set --dns and --dns-search for all containers
+
+## 0.32.2
+
+* Bugfix: [#101][]: Explicitly install lxc on Ubuntu (when lxc is exec_driver; continue to fully support LXC as a default installation path since its been since Docker 0.1)
+* Bugfix: [#103][]: Fix host argument (in docker run)
+
+## 0.32.1
+
+* Bugfix: [#98][]: Ensure Ruby 1.8 syntax is supported
+* Bugfix: Skip empty Array values in cli_args helper
+
+## 0.32.0
+
+_If you're using CentOS/RHEL with EPEL, upcoming docker-io 0.9.0 package upgrade can be tracked at [Bugzilla 1074880](https://bugzilla.redhat.com/show_bug.cgi?id=1074880)_
+
+This release includes Docker 0.9.0 changes and defaults, such as setting exec_driver to libcontainer ("native"), setting -rm on docker build, double dash arguments on the CLI, additional flags, etc.
+
+* DEPRECATED: Rename storage_type attribute to storage_driver to [match Docker terminology](http://docs.docker.io/en/latest/reference/commandline/cli/#daemon) (storage_type will be removed in chef-docker 1.0)
+* DEPRECATED: Rename virtualization_type attribute to exec_driver to [match Docker terminology](http://docs.docker.io/en/latest/reference/commandline/cli/#daemon) (virtualization_type will be removed in chef-docker 1.0)
+* Bugfix: [#80][]: Use double dashed arguments on CLI
+* Bugfix: Surround String values on CLI with quotes
+* Enhancement: [#77][]: Improved docker ps handling
+* Enhancement: [#78][]: Docker 0.9.0: Make --rm the default for docker build
+* Enhancement: [#81][]: Docker 0.9.0: Add a -G option to specify the group which unix sockets belong
+* Enhancement: [#82][]: Docker 0.9.0: Add -f flag to docker rm to force removal of running containers
+* Enhancement: Add -f flag for docker rmi to force removal of images
+* Enhancement: [#83][]: Docker 0.9.0: Add DOCKER_RAMDISK environment variable to make Docker work when the root is on a ramdisk
+* Enhancement: [#84][]: Docker 0.9.0: Add -e flag for execution driver
+* Enhancement: [#85][]: Docker 0.9.0: Default to libcontainer
+* Enhancement: [#86][]: Add Chefspec LWRP matchers
+
+## 0.31.0
+
+Lots of init love this release. Now supporting runit.
+
+Please note change of storage_type attribute from devmapper to devicemapper (and associated recipe name change) to match docker's name for the driver.
+
+Cookbook now automatically adds -s option to init configurations if storage_type is defined, which is it by default. If you were specifying -s in the options attribute, you no longer need to do so. In my quick testing, docker daemon doesn't seem to mind if -s is specified twice on startup, although you'll probably want to get rid of the extra specification.
+
+I've also dropped the LANG= and LC_ALL= locale environment settings from the Upstart job configuration. Its not specified in the default docker job. Please open an issue in docker project and here if for some reason this is actually necessary.
+
+* Bugfix: Match devicemapper storage_type attribute to match docker driver name (along with recipe name)
+* Enhancement: [#72][]: Add initial runit init_type
+* Enhancement: [#60][]: Automatically set docker -d -s from storage_type attribute
+* Enhancement: Simplify default/sysconfig file into one template (docker.sysconfig.erb) and source into SysV/Upstart init configurations
+* Enhancement: Add Debian docker daemon SysV init template
+
 ## 0.30.2
 
 * Bugfix: [#68][]: Fix CommandTimeout handling in LWRPs
@@ -309,11 +397,39 @@ Lots of community contributions this release -- thanks!
 [#57]: https://github.com/bflad/chef-docker/issues/57
 [#58]: https://github.com/bflad/chef-docker/issues/58
 [#59]: https://github.com/bflad/chef-docker/issues/59
+[#60]: https://github.com/bflad/chef-docker/issues/60
 [#62]: https://github.com/bflad/chef-docker/issues/62
 [#63]: https://github.com/bflad/chef-docker/issues/63
 [#64]: https://github.com/bflad/chef-docker/issues/64
 [#65]: https://github.com/bflad/chef-docker/issues/65
 [#67]: https://github.com/bflad/chef-docker/issues/67
 [#68]: https://github.com/bflad/chef-docker/issues/68
+[#72]: https://github.com/bflad/chef-docker/issues/72
+[#77]: https://github.com/bflad/chef-docker/issues/77
+[#78]: https://github.com/bflad/chef-docker/issues/78
+[#80]: https://github.com/bflad/chef-docker/issues/80
+[#81]: https://github.com/bflad/chef-docker/issues/81
+[#82]: https://github.com/bflad/chef-docker/issues/82
+[#83]: https://github.com/bflad/chef-docker/issues/83
+[#84]: https://github.com/bflad/chef-docker/issues/84
+[#85]: https://github.com/bflad/chef-docker/issues/85
+[#86]: https://github.com/bflad/chef-docker/issues/86
+[#88]: https://github.com/bflad/chef-docker/issues/88
+[#89]: https://github.com/bflad/chef-docker/issues/89
+[#90]: https://github.com/bflad/chef-docker/issues/90
+[#91]: https://github.com/bflad/chef-docker/issues/91
+[#98]: https://github.com/bflad/chef-docker/issues/98
+[#101]: https://github.com/bflad/chef-docker/issues/101
+[#103]: https://github.com/bflad/chef-docker/issues/103
+[#104]: https://github.com/bflad/chef-docker/issues/104
+[#105]: https://github.com/bflad/chef-docker/issues/105
+[#106]: https://github.com/bflad/chef-docker/issues/106
+[#107]: https://github.com/bflad/chef-docker/issues/107
+[#108]: https://github.com/bflad/chef-docker/issues/108
+[#109]: https://github.com/bflad/chef-docker/issues/109
+[#110]: https://github.com/bflad/chef-docker/issues/110
+[#111]: https://github.com/bflad/chef-docker/issues/111
+[#112]: https://github.com/bflad/chef-docker/issues/112
+[#113]: https://github.com/bflad/chef-docker/issues/113
 [@jcrobak]: https://github.com/jcrobak
 [@wingrunr21]: https://github.com/wingrunr21

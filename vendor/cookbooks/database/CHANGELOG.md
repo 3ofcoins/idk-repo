@@ -3,6 +3,20 @@ database Cookbook CHANGELOG
 This file is used to list changes made in each version of the database cookbook.
 
 
+v2.0.0 (2014-02-25)
+-------------------
+[COOK-3441] database_user password argument should not be required
+
+
+v1.6.0
+------
+### New Feature
+- **[COOK-4009](https://tickets.opscode.com/browse/COOK-4009)** - Add PostgreSQL SCHEMA management capability
+
+### Improvement
+- **[COOK-3862](https://tickets.opscode.com/browse/COOK-3862)** - Improve database cookbook documentation
+
+
 v1.5.2
 ------
 ### Improvement

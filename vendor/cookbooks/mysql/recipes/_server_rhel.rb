@@ -11,7 +11,7 @@ node['mysql']['server']['directories'].each do |key, value|
   directory value do
     owner     'mysql'
     group     'mysql'
-    mode      '0775'
+    mode      '0755'
     action    :create
     recursive true
   end
@@ -36,7 +36,7 @@ end
 
 # hax
 service 'mysql-start' do
-  service_name 'mysqld'
+  service_name node['mysql']['server']['service_name']
   action :nothing
 end
 
@@ -66,6 +66,7 @@ cmd = install_grants_cmd
 execute 'install-grants' do
   command cmd
   action :nothing
+  notifies :restart, 'service[mysql]', :immediately
 end
 
 #----
@@ -79,7 +80,7 @@ template 'final-my.cnf' do
 end
 
 service 'mysql' do
-  service_name 'mysqld'
+  service_name node['mysql']['server']['service_name']
   supports     :status => true, :restart => true, :reload => true
   action       [:enable, :start]
 end
