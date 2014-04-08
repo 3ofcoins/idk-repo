@@ -15,6 +15,7 @@ cookbook 'sanitize'
 cookbook 'sudo'
 cookbook 'users'
 cookbook 'nginx-proxy'
+cookbook 'ssl-key-vault', '~> 0.2'
 
 cookbook 'docker', '~> 0.33'
 cookbook 'database'

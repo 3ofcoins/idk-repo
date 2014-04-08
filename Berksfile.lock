@@ -39,6 +39,9 @@
     "nginx-proxy": {
       "locked_version": "0.2.1"
     },
+    "ssl-key-vault": {
+      "locked_version": "0.2.1"
+    },
     "docker": {
       "locked_version": "0.33.1"
     },
