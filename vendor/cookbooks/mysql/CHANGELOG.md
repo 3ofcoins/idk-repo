@@ -3,6 +3,29 @@ mysql Cookbook CHANGELOG
 This file is used to list changes made in each version of the mysql cookbook.
 
 
+v5.0.6 (2014-04-07)
+-------------------
+- [COOK-4519] - Updating specs to reflect pid file change on Ubuntu
+
+
+v5.0.4 (2014-04-07)
+-------------------
+- [COOK-4519] - Fix path to pid file on Ubuntu
+
+
+v5.0.2 (2014-04-01)
+-------------------
+- Moving server_deprecated into recipes directory
+
+
+v5.0.0 (2014-03-31)
+-------------------
+- Rewriting as a library cookbook
+- Exposing mysql_service and mysql_client resources
+- User now needs to supply configuration
+- Moving attribute driven recipe to server-deprecated
+
+
 v4.1.2 (2014-02-28)
 -------------------
 - [COOK-4349] - Fix invalid platform check
