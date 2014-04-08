@@ -132,13 +132,10 @@ EOF
   mode '0640'
 end
 
-template "#{node['nginx']['dir']}/sites-available/afdatabackend" do
-  source 'nginx.conf.erb'
-  notifies :reload, 'service[nginx]'
-end
 nginx_site "afdatabackend"
 
 runit_service 'afdatabackend' do
   default_logger true
   subscribes :restart, 'template[/srv/afdatabackend/shared/config/database.yml]'
+  only_if { File.exist? '/srv/afdatabackend/current' }
 end
