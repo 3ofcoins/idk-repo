@@ -5,6 +5,8 @@ $:.unshift(libdir) unless $:.include?(libdir)
 
 require 'idk/config'
 
+$realm.config_files('rake').each { |f| load f }
+
 Dir['lib/tasks/*.rake', 'vendor/cookbooks/*/tasks/*.rake'].sort.each do |f|
   load f
 end
