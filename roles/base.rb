@@ -6,12 +6,14 @@ run_list *[
   'role[attributes]',
   'recipe[apt]',
   'recipe[ohai]',
-  'recipe[omnibus_updater]',
   ( 'recipe[chef-client::config]' unless Chef::Config[:solo] ),
+  'recipe[omnibus_updater]',
   'recipe[sudo]',
   'recipe[users::sysadmins]',
   'recipe[sanitize]',
-  'recipe[hostname]' ].compact
+  'recipe[hostname]',
+  'recipe[scratch]'
+].compact
 
 default_attributes(
   :authorization => {
