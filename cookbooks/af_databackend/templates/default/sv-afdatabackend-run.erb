@@ -12,4 +12,4 @@ cd /srv/afdatabackend/current
 . ./.ruby-environment
 
 exec chpst -u afdb bundle exec unicorn \
-     -E production -o 127.0.0.1 -p <%= node['af']['databackend']['unicorn_port'] %>
+     -E <%= node['af']['databackend']['rails_env'] %> -o 127.0.0.1 -p <%= node['af']['databackend']['unicorn_port'] %>

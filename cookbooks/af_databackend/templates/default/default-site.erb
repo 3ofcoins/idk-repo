@@ -9,7 +9,7 @@ server {
 server {
   listen 0.0.0.0:80;
   server_name <%= node['af']['databackend']['domain'] %>;
-<% if File.exist? '/etc/ssl/private/star_analyticsfire_com.key' -%>  
+<% if File.exist? '/etc/ssl/private/star.analyticsfire.com.key' -%>  
   rewrite ^ https://<%= node['af']['databackend']['domain'] %>$request_uri? permanent;
 }
 
@@ -17,8 +17,8 @@ server {
   listen 0.0.0.0:443 ssl;
   server_name <%= node['af']['databackend']['domain'] %>;
 
-  ssl_certificate_key /etc/ssl/private/star_analyticsfire_com.key;
-  ssl_certificate /etc/ssl/certs/star_analyticsfire_com.pem;
+  ssl_certificate_key /etc/ssl/private/star.analyticsfire.com.key;
+  ssl_certificate /etc/ssl/certs/star.analyticsfire.com.pem;
 <% end -%>
 
   server_name <%= node['af']['databackend']['domain'] %>;

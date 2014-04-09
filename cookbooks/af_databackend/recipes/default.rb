@@ -101,23 +101,6 @@ cookbook_file '/srv/afdatabackend/shared/config/htpasswd' do
   mode 0640
 end
 
-# _rvm = ". /usr/local/rvm/environments/ruby-#{node['af']['databackend']['ruby']}"
-
-# deploy_branch '/srv/afdatabackend' do
-#   repo 'git@github.com:AnalyticsFire/afdatabackend.git'
-#   branch 'master'
-#   shallow_clone true
-#   action ENV['FORCE_DEPLOY'] ? :force_deploy : :deploy
-#   symlinks({})
-#   symlink_before_migrate 'database.yml' => 'config/database.yml'
-#   environment 'RAILS_ENV' => 'production'
-#   migration_command "#{_rvm} ; ./bin/rake assets:precompile RAILS_ENV=production ; ./bin/rake db:migrate RAILS_ENV=production"
-#   migrate true
-#   before_migrate do
-#     execute "set -e -x ; cd #{release_path} ; #{_rvm} ; bundle --deployment --binstubs --quiet --path /srv/afdatabackend/bundle --without development test doc"
-#   end
-# end
-
 # FIXME: separate nginx cookbook
 file '/etc/nginx/conf.d/ssl.conf' do
   content <<EOF
