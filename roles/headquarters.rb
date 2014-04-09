@@ -1,8 +1,7 @@
-name 'afdatabackend'
+name 'headquarters'
 
 run_list 'role[base]',
-         'recipe[ssl-key-vault]',
-         'recipe[af_databackend]'
+         'recipe[ssl-key-vault]'
 
 default_attributes(
   ssl_certificates: {
