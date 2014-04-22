@@ -1,4 +1,7 @@
 DEPENDENCIES
+  3ofcoins
+    git: git://github.com/3ofcoins/chef-cookbook-3ofcoins.git
+    revision: 690153b9d2fbeabd18bba255686152af19a5c191
   apt
   build-essential
   chef-client
@@ -22,6 +25,8 @@ DEPENDENCIES
   users
 
 GRAPH
+  3ofcoins (0.1.0)
+    apt (>= 0.0.0)
   apache2 (1.10.2)
     iptables (>= 0.0.0)
     logrotate (>= 0.0.0)

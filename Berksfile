@@ -2,6 +2,7 @@
 
 source "https://api.berkshelf.com"
 
+cookbook '3ofcoins', github: '3ofcoins/chef-cookbook-3ofcoins'
 cookbook 'apt'
 cookbook 'build-essential'
 cookbook 'chef-client'
