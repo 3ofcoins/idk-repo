@@ -17,6 +17,32 @@ Attribute deprecations so you can be sure you can upgrade:
 * container LWRP Fixnum port attribute: use full String notation from Docker documentation in port attribute instead
 * container LWRP public_port attribute: use port attribute instead
 
+## 0.34.1
+
+* [#134][]: Bugfix: Fix docker_registry login handling, fixes #114
+
+## 0.34.0
+
+Attributes now available for all docker daemon flags as well as system IP forwarding.
+
+* REMOVED: container_dns* attributes (use replacement dns* attributes on daemon for all containers or docker_container dns* attributes instead)
+* DEPRECATED: bind_* attributes to match docker terminology (use host attribute instead)
+* Bugfix: [#132][]: Do Not Explicitly Set storage_driver Attribute
+* Bugfix: [#133][]: Remove explicit false defaults in resources
+* Bugfix: [#114][]: Error executing action login on resource docker_registry
+* Enhancement: [#115][]: Add IP forwarding attributes
+* Enhancement: [#116][]: Docker 0.10.0: Add --no-prune to docker rmi
+* Enhancement: [#117][]: Docker 0.10.0: Add --output flag to docker save (as well as tag support)
+* Enhancement: [#118][]: Docker 0.10.0: Add --input flag to docker load
+* Enhancement: [#119][]: Docker 0.10.0: Add support for --env-file to load environment variables from files
+* Enhancement: [#120][]: Docker 0.10.0: Deprecate docker insert
+* Enhancement: [#123][]: Add docker kill --signal
+* Enhancement: [#124][]: Add all docker daemon options as attributes
+* Enhancement: [#125][]: Use dns* attributes to set docker daemon options, not defaults per-container
+* Enhancement: [#128][]: Add checksum attribute for binary downloads
+* Enhancement: [#126][]: Set long option names for specified docker daemon options
+* Enhancement: [#127][]: Use a helper function to specify single line docker daemon options
+
 ## 0.33.1
 
 * Bugfix: [#112][]: Defines runner methods for ChefSpec matchers
@@ -431,5 +457,21 @@ Lots of community contributions this release -- thanks!
 [#111]: https://github.com/bflad/chef-docker/issues/111
 [#112]: https://github.com/bflad/chef-docker/issues/112
 [#113]: https://github.com/bflad/chef-docker/issues/113
+[#114]: https://github.com/bflad/chef-docker/issues/114
+[#115]: https://github.com/bflad/chef-docker/issues/115
+[#116]: https://github.com/bflad/chef-docker/issues/116
+[#117]: https://github.com/bflad/chef-docker/issues/117
+[#118]: https://github.com/bflad/chef-docker/issues/118
+[#119]: https://github.com/bflad/chef-docker/issues/119
+[#120]: https://github.com/bflad/chef-docker/issues/120
+[#123]: https://github.com/bflad/chef-docker/issues/123
+[#124]: https://github.com/bflad/chef-docker/issues/124
+[#125]: https://github.com/bflad/chef-docker/issues/125
+[#126]: https://github.com/bflad/chef-docker/issues/126
+[#127]: https://github.com/bflad/chef-docker/issues/127
+[#128]: https://github.com/bflad/chef-docker/issues/128
+[#132]: https://github.com/bflad/chef-docker/issues/132
+[#133]: https://github.com/bflad/chef-docker/issues/133
+[#134]: https://github.com/bflad/chef-docker/issues/134
 [@jcrobak]: https://github.com/jcrobak
 [@wingrunr21]: https://github.com/wingrunr21

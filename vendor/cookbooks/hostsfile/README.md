@@ -2,12 +2,16 @@ hostsfile LWRP
 ==============
 [![Build Status](https://travis-ci.org/customink-webops/hostsfile.png?branch=master)](https://travis-ci.org/customink-webops/hostsfile)
 
-`hostsfile` provides an LWRP for managing your hosts file using Chef.
+`hostsfile` provides an LWRP for managing your `/etc/hosts` (or Windows equivalent) file using Chef.
+
 
 Requirements
 ------------
-- Chef 10 or higher
-- Ruby 1.8.7 or higher
+- Chef 11 or higher
+- **Ruby 1.9.3 or higher**
+
+**Please stop opening Pull Requests to restore Ruby 1.8 support!** Any of the `1.x.y` series of this cookbook will work with Chef 10 and Ruby 1.8. You can use Opscode's [Omnibus installer](http://www.opscode.com/blog/2012/06/29/omnibus-chef-packaging/) to install Ruby 1.9+ and Seth Chisamore's [Vagrant Omnibus plugin](https://github.com/schisamo/vagrant-omnibus) to get Ruby 1.9+ on your Vagrant box.
+
 
 Attributes
 ----------
@@ -31,6 +35,12 @@ Attributes
     <td></td>
   </tr>
   <tr>
+    <td>unique</td>
+    <td>remove any existing entries that have the same <tt>hostname</tt></td>
+    <td><tt>true</tt></td>
+    <td><tt>false</tt></td>
+  </tr>
+  <tr>
     <td>aliases</td>
     <td>array of aliases for the entry</td>
     <td><tt>['www.example.com']</tt></td>
@@ -50,24 +60,28 @@ Attributes
   </tr>
 </table>
 
+
 Actions
 -------
-**Please note**: As of `v0.1.2`, specifying a hostname or alias that exists in another entry will remove that hostname from the other entry before adding to this one. For example:
+**Please note**: In `v0.1.2`, specifying a hostname or alias that existed in another automatically removed that hostname from the other entry before. In `v2.1.0`, the `unique` option was added to give the user case-by-case control of this behavior. For example, given an `/etc/hosts` file that contains:
 
     1.2.3.4          example.com www.example.com
 
-and
+when the Chef recipe below is converged:
 
 ```ruby
 hostsfile_entry '2.3.4.5' do
   hostname  'www.example.com'
+  unique    true
 end
 ```
 
-would yield an /etc/hosts file like this:
+then the `/etc/hosts` file will look like this:
 
     1.2.3.4          example.com
     2.3.4.5          www.example.com
+
+Not specifying the `unique` parameter will result in duplicate hostsfile entries.
 
 #### `create`
 Creates a new hosts file entry. If an entry already exists, it will be overwritten by this one.
@@ -139,6 +153,7 @@ end
 
 This will remove the entry for `1.2.3.4`.
 
+
 Usage
 -----
 If you're using [Berkshelf](http://berkshelf.com/), just add `hostsfile` to your `Berksfile`:
@@ -158,6 +173,26 @@ Have any other cookbooks *depend* on hostsfile by editing editing the `metadata.
 depends 'hostsfile'
 ```
 
+Note that you can specify a custom path to your hosts file in the `['hostsfile']['path']` node attribute. Otherwise, it defaults to sensible paths depending on your OS.
+
+### Testing
+If you are using [ChefSpec](https://github.com/sethvargo/chefspec) to unit test a cookbook that implements the `hostsfile_entry` LWRP, this cookbook packages customer matchers that you can use in your unit tests:
+
+- `append_hostsfile_entry`
+- `create_hostsfile_entry`
+- `create_hostsfile_entry_if_missing`
+- `remove_hostsfile_entry`
+- `update_hostsfile_entry`
+
+For example:
+
+```ruby
+it 'creates a hostsfile entry for the DNS server' do
+  expect(chef_run).to create_hostsfile_entry('1.2.3.4')
+    .with_hostname('dns.example.com')
+end
+```
+
 Priority
 --------
 Priority is a relatively new addition to the cookbook. It gives you the ability to (somewhat) specify the relative order of entries. By default, the priority is calculated for you as follows:
@@ -168,19 +203,22 @@ Priority is a relatively new addition to the cookbook. It gives you the ability 
 
 However, you can override it using the `priority` option.
 
+
 Contributing
 ------------
 1. Fork the project
 2. Create a feature branch corresponding to you change
 3. Commit and test thoroughly
 4. Create a Pull Request on github
-    - ensure you add a detailed description of your changes
 
-License and Authors
--------------------
+
+License & Authors
+-----------------
 - Author:: Seth Vargo (sethvargo@gmail.com)
 
-Copyright 2012 Seth Vargo, CustomInk, LLC
+```text
+Copyright 2012-2013, Seth Vargo
+Copyright 2012, CustomInk, LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -193,3 +231,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```

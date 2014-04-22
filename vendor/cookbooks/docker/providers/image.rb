@@ -42,7 +42,9 @@ action :import do
   end
 end
 
+# DEPRECATED: Deprecated as of Docker 0.10.0
 action :insert do
+  Chef::Log.warn('Using DEPRECATED (as of Docker 0.10.0) insert action in docker_image. Please update your workflow and cookbook.')
   if installed?
     insert
     new_resource.updated_by_last_action(true)
@@ -180,7 +182,9 @@ def import
   end
 end
 
+# DEPRECATED: Deprecated as of Docker 0.10.0
 def insert
+  Chef::Log.warn('Using DEPRECATED (as of Docker 0.10.0) insert command in docker_image. Please update your workflow and cookbook.')
   docker_cmd!("insert #{new_resource.image_name} #{new_resource.source} #{new_resource.destination}")
 end
 
@@ -189,7 +193,14 @@ def installed?
 end
 
 def load
-  docker_cmd!("load < #{new_resource.source}")
+  if new_resource.input
+    load_args = cli_args(
+      'input' => new_resource.input
+    )
+    docker_cmd!("load #{load_args}")
+  else
+    docker_cmd!("load < #{new_resource.source}")
+  end
 end
 
 def pull
@@ -206,7 +217,8 @@ end
 
 def remove
   remove_args = cli_args(
-    'force' => new_resource.force
+    'force' => new_resource.force,
+    'no-prune' => new_resource.no_prune
   )
   image_name = new_resource.image_name
   image_name = "#{image_name}:#{new_resource.tag}" if new_resource.tag
@@ -223,7 +235,16 @@ def repository_and_tag_args
 end
 
 def save
-  docker_cmd!("save #{new_resource.image_name} > #{new_resource.destination}")
+  image_name = new_resource.image_name
+  image_name = "#{image_name}:#{new_resource.tag}" if new_resource.tag
+  if new_resource.output
+    save_args = cli_args(
+      'output' => new_resource.output
+    )
+    docker_cmd!("save #{save_args} #{image_name}")
+  else
+    docker_cmd!("save #{image_name} > #{new_resource.destination}")
+  end
 end
 
 def tag

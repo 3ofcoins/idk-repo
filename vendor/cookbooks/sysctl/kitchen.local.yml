@@ -1,0 +1,10 @@
+---
+driver: 
+  name: docker
+
+platforms:
+- name: ubuntu-12.04
+  driver_config:
+    image: ubuntu:12.04
+    platform: ubuntu
+

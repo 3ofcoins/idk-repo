@@ -2,6 +2,26 @@ cron Cookbook CHANGELOG
 =======================
 This file is used to list changes made in each version of the cron cookbook.
 
+v1.3.10 (2014-04-10)
+--------------------
+- [COOK-4507] - restore ability to use @ fields
+
+
+v1.3.8 (2014-04-10)
+-------------------
+- [COOK-4544] fixing NameError exception on :delete action
+
+
+v1.3.6 (2014-04-09)
+-------------------
+- [COOK-4337] fixing validations
+
+
+v1.3.4 (2014-04-09)
+-------------------
+- Reverting [COOK-4337] - cron cookbook does no input validation
+
+
 v1.3.2 (2014-03-27)
 -------------------
 - [COOK-4337] - cron cookbook does no input validation
