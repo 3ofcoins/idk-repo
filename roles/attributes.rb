@@ -2,6 +2,11 @@ name 'attributes'
 description 'Default attributes to be also used on unmanaged machines configured by chef-solo'
 
 default_attributes(
+  :chef_client => {
+    :config => {
+      :ssl_verify_mode => :verify_peer
+    }
+  },
   :java => {
     :install_flavor => 'oracle',
     :jdk_version => '7',
