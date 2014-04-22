@@ -1,2 +1,4 @@
 
-chef_berkshelf command: 'berks vendor vendor/cookbooks'
+tool 'cookbooks',
+     specs: [ 'Berksfile', 'Berksfile.lock' ],
+     command: 'berks vendor vendor/cookbooks'
