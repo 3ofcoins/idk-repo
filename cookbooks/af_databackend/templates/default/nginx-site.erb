@@ -1,17 +1,18 @@
 # -*- conf -*-
 <% @secure = node['af']['databackend']['ssl_certificate'] && node['ssl_certificates'] && node['ssl_certificates'][ node['af']['databackend']['ssl_certificate'] ] -%>  
+<% base_uri = URI.parse("http#{ 's' if @secure }://#{ node['af']['databackend']['domain'] }") -%>
 
 server {
   listen 0.0.0.0:80;
   server_name 78.46.63.223;
-  rewrite ^ http<%= 's' if @secure %>://<%= node['af']['databackend']['domain'] %>$request_uri? permanent;
+  rewrite ^ <%= base_uri %>$request_uri? permanent;
 }
 
 server {
   listen 0.0.0.0:80;
   server_name <%= node['af']['databackend']['domain'] %>;
 <% if @secure -%>
-  rewrite ^ https://<%= node['af']['databackend']['domain'] %>$request_uri? permanent;
+  rewrite ^ <%= base_uri %>$request_uri? permanent;
 }
 
 server {
@@ -36,3 +37,16 @@ server {
     proxy_pass http://127.0.0.1:<%= node['af']['databackend']['unicorn_port'] %>;
   }
 }
+<% node['af']['databackend']['domain_shortcuts'].sort.each do |domain, target| -%>
+
+server {
+  listen 0.0.0.0:80;
+<%   if @secure -%>
+  listen 0.0.0.0:443 ssl;
+  ssl_certificate_key /etc/ssl/private/<%= node['af']['databackend']['ssl_certificate'] %>.key;
+  ssl_certificate /etc/ssl/certs/<%= node['af']['databackend']['ssl_certificate'] %>.pem;
+<%   end -%>
+  server_name <%= domain %>;
+  rewrite ^ <%= base_uri.merge(target) %>? redirect;
+}
+<% end -%>
