@@ -3,6 +3,44 @@ mysql Cookbook CHANGELOG
 This file is used to list changes made in each version of the mysql cookbook.
 
 
+v5.1.12 (2014-04-21)
+--------------------
+- [COOK-4554] - Support for Debian Sid
+
+
+v5.1.10 (2014-04-21)
+--------------------
+- [COOK-4565] Support for Ubuntu 14.04
+- [COOK-4565] Adding Specs and TK platform
+- Removing non-LTS 13.10 specs and TK platform
+
+
+v5.1.8 (2014-04-12)
+-------------------
+Adding Ubuntu 13.04 to Platforminfo
+
+
+v5.1.6 (2014-04-11)
+-------------------
+- [COOK-4548] - Add template[/etc/mysql/debian.cnf] to Ubuntu provider
+
+
+v5.1.4 (2014-04-11)
+-------------------
+- [COOK-4547] - Shellescape server_root_password
+
+
+v5.1.2 (2014-04-09)
+-------------------
+- [COOK-4519] - Fix error in run_dir for Ubuntu
+- [COOK-4531] - Fix pid and run_dir for Debian
+
+
+v5.1.0 (2014-04-08)
+-------------------
+[COOK-4523] - Allow for both :restart and :reload
+
+
 v5.0.6 (2014-04-07)
 -------------------
 - [COOK-4519] - Updating specs to reflect pid file change on Ubuntu

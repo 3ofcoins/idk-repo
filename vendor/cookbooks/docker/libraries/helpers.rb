@@ -25,6 +25,58 @@ EOH
     # Exception to signify that the docker command timed out.
     class CommandTimeout < RuntimeError; end
 
+    def self.daemon_cli_args(node)
+      daemon_options = Helpers::Docker.cli_args(
+        'api-enable-cors' => node['docker']['api_enable_cors'],
+        'bip' => node['docker']['bip'],
+        'bridge' => node['docker']['bridge'],
+        'debug' => node['docker']['debug'],
+        'dns' => Array(node['docker']['dns']),
+        'dns-search' => Array(node['docker']['dns_search']),
+        'exec-driver' => node['docker']['exec_driver'],
+        'host' => Array(node['docker']['host']),
+        'graph' => node['docker']['graph'],
+        'group' => node['docker']['group'],
+        'icc' => node['docker']['icc'],
+        'ip' => node['docker']['ip'],
+        'iptables' => node['docker']['iptables'],
+        'mtu' => node['docker']['mtu'],
+        'pidfile' => node['docker']['pidfile'],
+        'restart' => node['docker']['container_init_type'] ? false : nil,
+        'storage-driver' => node['docker']['storage_driver'],
+        'tls' => node['docker']['tls'],
+        'tlscacert' => node['docker']['tlscacert'],
+        'tlscert' => node['docker']['tlscert'],
+        'tlskey' => node['docker']['tlskey'],
+        'tlsverify' => node['docker']['tlsverify']
+      )
+      daemon_options += " #{node['docker']['options']}" if node['docker']['options']
+      daemon_options
+    end
+
+    # NOTE: This method has custom daemon arg handling for
+    # the daemon options since they do not parse quotes correctly
+    # e.g. --exec-driver="lxc"
+    # e.g. --host="unix:///var/run/docker.sock"
+    # e.g. --storage-driver="aufs"
+    # This probably should be opened as a bug in Docker
+    def self.cli_args(spec)
+      cli_line = ''
+      spec.each_pair do |arg, value|
+        case value
+        when Array
+          next if value.empty?
+          args = value.map do |v|
+            " --#{arg}=#{v}"
+          end
+          cli_line += args.join
+        when FalseClass, Fixnum, Integer, String, TrueClass
+          cli_line += " --#{arg}=#{value}"
+        end
+      end
+      cli_line
+    end
+
     def cli_args(spec)
       cli_line = ''
       spec.each_pair do |arg, value|
@@ -61,6 +113,8 @@ EOH
         dockercfg[k].merge!(dockercfg_parse_auth(v['auth']))
       end
       dockercfg
+    rescue
+      nil
     end
 
     def dockercfg_parse_auth(str)

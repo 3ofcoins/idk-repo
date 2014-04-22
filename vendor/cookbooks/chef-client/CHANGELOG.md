@@ -2,6 +2,22 @@ chef-client Cookbook CHANGELOG
 ==============================
 This file is used to list changes made in each version of the chef-client cookbook.
 
+v3.4.0 (2014-04-09)
+-------------------
+- [COOK-4521] - support Ohai 7 syntax for disabling plugins
+- [COOK-4505] - kill -9 chef-client when stopping vis SMF
+
+
+v3.3.8 (2014-03-18)
+-------------------
+- [COOK-4430] can't rotate chef-client's logs
+
+
+v3.3.6 (2014-03-18)
+-------------------
+- [COOK-4432] Use SSL verification by default when talking to HEC
+
+
 v3.3.4 (2014-03-12)
 -------------------
 - [COOK-4101] - Support ENV['https_proxy']
