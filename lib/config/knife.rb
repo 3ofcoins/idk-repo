@@ -36,4 +36,8 @@ knife[:vault_admins] = Lazy {
     .select { |uname| uname != 'admin' && Chef::User.load(uname).admin }
 }
 
-instance_load_config_pieces
+begin
+  instance_load_config_pieces
+rescue => e
+  warn "Can't instance_load_config_pieces: #{e}"
+end
