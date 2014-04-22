@@ -95,10 +95,34 @@ template '/srv/afdatabackend/shared/config/database.yml' do
   mode '0640'
 end
 
-cookbook_file '/srv/afdatabackend/shared/config/htpasswd' do
+file '/srv/afdatabackend/shared/config/secrets.yml' do
   owner 'root'
-  group 'www-data'
-  mode 0640
+  group 'afdb'
+  mode '0640'
+  content YAML.dump('production' => Hash[node['af']['databackend']['secrets'].to_hash.sort])
+end
+
+if node['af']['databackend']['env_vault_item_id']
+  chef_gem 'chef-vault' do
+    version '~> 2.2'
+  end
+  require 'chef-vault'
+  item = ChefVault::Item
+    .load('creds', node['af']['databackend']['env_vault_item_id'])
+  afdb_env = item
+    .to_hash
+    .sort
+    .map { |k, v| "#{k}=#{v}\n" unless %w[chef_type data_bag id].include?(k) }
+    .join
+else
+  afdb_env = ""
+end
+
+file '/srv/afdatabackend/shared/.env' do
+  owner 'root'
+  group 'afdb'
+  mode '0640'
+  content afdb_env
 end
 
 # FIXME: separate nginx cookbook
@@ -115,10 +139,19 @@ EOF
   mode '0640'
 end
 
+template "#{node['nginx']['dir']}/sites-available/afdatabackend" do
+  source 'nginx-site.erb'
+  group node['nginx']['group']
+  mode '0640'
+  notifies :reload, 'service[nginx]' if ::File.exists?("#{node['nginx']['dir']}/sites-enabled/afdatabackend")
+end
+
 nginx_site "afdatabackend"
 
 runit_service 'afdatabackend' do
   default_logger true
   subscribes :restart, 'template[/srv/afdatabackend/shared/config/database.yml]'
+  subscribes :restart, 'template[/srv/afdatabackend/shared/config/secrets.yml]'
+  subscribes :restart, 'file[/srv/afdatabackend/shared/.env]'
   only_if { File.exist? '/srv/afdatabackend/current' }
 end

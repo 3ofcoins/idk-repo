@@ -1,5 +1,4 @@
 # -*- conf -*-
-
 <% @secure = node['af']['databackend']['ssl_certificate'] && node['ssl_certificates'] && node['ssl_certificates'][ node['af']['databackend']['ssl_certificate'] ] -%>  
 
 server {
