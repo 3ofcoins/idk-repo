@@ -15,25 +15,33 @@ client_key               $realm.path('.chef/client.pem')
 validation_client_name   "#{$realm.opscode_organization || 'chef'}-validator"
 validation_key           $realm.path('config/validator.pem')
 cache_type               'BasicFile'
-cache_options            :path => $realm.path(".chef/checksums")
-cookbook_path            [ $realm.path('cookbooks'),
-                           $realm.path('lib/cookbooks'),
-                           $realm.path('vendor/cookbooks') ]
+cache_options            path: $realm.path(".chef/checksums")
+cookbook_path            [$realm.path('cookbooks'),
+                          $realm.path('lib/cookbooks'),
+                          $realm.path('vendor/cookbooks')]
 
 knife[:distro] = 'chef-full'
 
 class Lazy < Delegator
-  def initialize(&block) ; @delegate_sd_block = block ; end
-  def __getobj__ ; @delegate_sd_obj ||= @delegate_sd_block.call ; end
+  def initialize(&block)
+    @delegate_sd_block = block
+  end
+
+  def __getobj__
+    @delegate_sd_obj ||= @delegate_sd_block.call
+  end
 end
-def Lazy(&block) ; Lazy.new(&block) ; end
+
+def Lazy(&block)
+  Lazy.new(&block)
+end
 
 knife[:vault_mode] = 'client'
-knife[:vault_admins] = Lazy {
+knife[:vault_admins] = Lazy do
   Chef::User
     .list
     .keys
     .select { |uname| uname != 'admin' && Chef::User.load(uname).admin }
-}
+end
 
 instance_load_config_pieces

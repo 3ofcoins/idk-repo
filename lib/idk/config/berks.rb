@@ -12,7 +12,7 @@ module IDK
         end
       end
 
-      def env_run_lists(lists={})
+      def env_run_lists(lists = {})
         lists.values.each do |list|
           run_list(*Array(list))
         end
@@ -48,7 +48,8 @@ module IDK
         needs
       end
 
-      def method_missing(method, *args) ; end
+      def method_missing(method, *args)
+      end
     end
   end
 end

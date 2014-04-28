@@ -20,4 +20,4 @@ file 'bootstrap' => CONTENTS do
   end
 end
 
-task :default => 'bootstrap'
+task default: 'bootstrap'

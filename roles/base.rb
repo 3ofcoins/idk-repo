@@ -11,21 +11,21 @@ run_list 'recipe[apt]',
          'recipe[hostname]'
 
 default_attributes(
-  :authorization => {
-    :sudo => {
-      :agent_forwarding => true,
-      :groups => ['sysadmin'],
-      :include_sudoers_d => true,
-      :passwordless => true}},
-  :domain => $realm.domain,
-  :omnibus_updater => {
-    :version => '11.8.2',
-    :remove_chef_system_gem => true,
-    :cache_dir => '/var/cache/chef' },
-  :sanitize => {
-    :iptables => false,
-    :keep_access => ::Dir[$realm.path('data_bags/users/*.json')].empty?
+  authorization: {
+    sudo: {
+      agent_forwarding: true,
+      groups: ['sysadmin'],
+      include_sudoers_d: true,
+      passwordless: true } },
+  domain: $realm.domain,
+  omnibus_updater: {
+    version: '11.8.2',
+    remove_chef_system_gem: true,
+    cache_dir: '/var/cache/chef' },
+  sanitize: {
+    iptables: false,
+    keep_access: ::Dir[$realm.path('data_bags/users/*.json')].empty?
   },
-  :set_fqdn => "*.#{$realm.domain}")
+  set_fqdn: "*.#{$realm.domain}")
 
 instance_load_subdir

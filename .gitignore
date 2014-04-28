@@ -1,6 +1,7 @@
 *~
 .rake_test_cache
 *.pyc
+*.sw*
 /doc/_build
 /.chef
 /.vagrant

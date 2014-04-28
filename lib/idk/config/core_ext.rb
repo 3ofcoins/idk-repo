@@ -1,6 +1,6 @@
 module Foundation
   module ConfigureMixin
-    def instance_load_config_pieces(basename=nil)
+    def instance_load_config_pieces(basename = nil)
       caller = ::Kernel.caller.first.sub(/(:\d+)?(:in .*)?$/, '')
       basename ||= ::File.basename(caller, '.rb')
       $realm.configure(self, basename, caller)
@@ -15,7 +15,7 @@ module Foundation
     def instance_load_subdir
       caller = ::Kernel.caller.first.sub(/(:\d+)?(:in .*)?$/, '')
       glob = ::File.join(::File.dirname(caller),
-        ::File.basename(caller, '.rb'), '*.rb')
+                         ::File.basename(caller, '.rb'), '*.rb')
       ::Dir[glob].sort.each do |subconf|
         instance_load(::File.expand_path(subconf))
       end

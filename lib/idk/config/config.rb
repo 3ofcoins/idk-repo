@@ -35,8 +35,8 @@ module IDK
     end
 
     def load!
-      config_files('idk').
-        each { |cfg_path| load(cfg_path) }
+      config_files('idk')
+        .each { |cfg_path| load(cfg_path) }
       self
     end
 
@@ -58,7 +58,7 @@ module IDK
     # - config/basename-*.ext,
     # - .chef/basename/*.ext
     # - .chef/basename-*.ext
-    def config_files(basename, ext='.rb')
+    def config_files(basename, ext = '.rb')
       ::Enumerator.new do |out|
         [
           "lib/config/#{basename}#{ext}",
@@ -96,6 +96,7 @@ module IDK
     end
 
     private
+
     def instance_eval_in_method_to_allow_return(other, *args, &block)
       other.instance_eval(*args, &block)
     end
