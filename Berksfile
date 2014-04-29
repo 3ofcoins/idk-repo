@@ -22,5 +22,6 @@ cookbook 'docker', '~> 0.33'
 cookbook 'database'
 cookbook 'nginx'
 cookbook 'rvm', github: 'fnichol/chef-rvm'
+cookbook 'tarsnap'
 
 cookbook 'git-annex'
