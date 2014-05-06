@@ -21,4 +21,19 @@ end
 nginx_proxy 'chef-api.analyticsfire.com' do
   ssl_key 'star.analyticsfire.com'
   url 'https://127.0.0.1:4000'
+  custom_config 'client_max_body_size 32M;'
+end
+
+directory '/srv/backup/chef-server'
+
+cookbook_file '/srv/backup/chef-server/backup.sh' do
+  source 'chef-server-backup.sh'
+  mode 0755
+end
+
+cron 'tarsnap::chef-server' do
+  command 'cd /srv/backup/chef-server && ./backup.sh'
+  minute '15'
+  hour '8'
+  only_if { node.chef_environment == 'production' }
 end

@@ -1,4 +1,4 @@
 
 tool 'cookbooks',
-     specs: [ 'Berksfile', 'Berksfile.lock' ],
+     specs: %w[Berksfile Berksfile.lock],
      command: 'berks vendor vendor/cookbooks'

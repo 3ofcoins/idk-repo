@@ -17,10 +17,10 @@ end
 
 include_recipe 'git'
 include_recipe 'nginx'
-include_recipe 'database::postgresql'
-include_recipe 'postgresql::server'
 include_recipe 'runit'
 include_recipe 'rvm::system_install'
+
+include_recipe 'af_databackend::database'
 
 rvm_ruby node['af']['databackend']['ruby']
 

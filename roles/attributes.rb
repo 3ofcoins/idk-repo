@@ -30,7 +30,10 @@ default_attributes(
       :ssl => false
     },
     :enable_pgdg_apt => true,
-    :version => '9.3'
+    :version => '9.3',
+    :server => {
+      :config_change_notify => :reload
+    }
   },
   :rabbitmq => {
     :version => '3.2.2'

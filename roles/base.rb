@@ -31,6 +31,9 @@ default_attributes(
     :iptables => false,
     :keep_access => ::Dir[$realm.path('data_bags/users/*.json')].empty?
   },
-  :set_fqdn => "*.#{$realm.domain}")
+  :set_fqdn => "*.#{$realm.domain}",
+  :tarsnapper => {
+    :retention => '1d 30d 366d 18000d'
+  })
 
 instance_load_subdir
