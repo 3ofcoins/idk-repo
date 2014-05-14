@@ -14,7 +14,7 @@ module IDK
     option :opscode_organization, nil
     option :opscode_username, -> { username }
 
-    option :chef_server_url, -> {
+    option :chef_server_url, lambda {
       if opscode_organization
         "https://api.opscode.com/organization/#{opscode_organization}"
       else
@@ -22,7 +22,7 @@ module IDK
       end
     }
 
-    option :chef_username, -> {
+    option :chef_username, lambda {
       if opscode_organization
         opscode_username
       else

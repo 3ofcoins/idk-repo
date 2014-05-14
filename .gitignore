@@ -3,7 +3,7 @@
 *.pyc
 *.sw*
 /doc/_build
-/.chef
+/.chef/secrets
 /.vagrant
 /tmp
 /cache

@@ -3,7 +3,7 @@
 ## It is symlinked as .chef/knife.rb.
 
 libdir = File.dirname(File.dirname(File.realpath(__FILE__)))
-$:.unshift(libdir) unless $:.include?(libdir)
+$LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 require 'idk/config'
 
 # Default configuration
