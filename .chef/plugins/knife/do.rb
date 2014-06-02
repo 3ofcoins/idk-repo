@@ -2,14 +2,45 @@ require 'chef'
 require 'chef/knife'
 require 'rake'
 
+module Rake
+  class << self
+    def application
+      @application ||= CustomRakeApp.new
+    end
+  end
+
+  class CustomRakeApp < Rake::Application
+    DEFAULT_RAKEFILES = ['config/tasks.rb'].freeze
+
+    def initialize
+      super
+      @name = 'rake'
+      @rakefiles = DEFAULT_RAKEFILES.dup
+      @rakefile = nil
+      @pending_imports = []
+      @imported = []
+      @loaders = {}
+      @default_loader = Rake::DefaultLoader.new
+      @original_dir = Dir.pwd
+      @top_level_tasks = []
+      add_loader('rb', Rake::DefaultLoader.new)
+      add_loader('rf', Rake::DefaultLoader.new)
+      add_loader('rake', Rake::DefaultLoader.new)
+      @tty_output = STDOUT.tty?
+      @terminal_columns = ENV['RAKE_COLUMNS'].to_i
+    end
+  end
+end
+
 module KnifeTask
+  include Rake
+
   Rake::TaskManager.record_task_metadata = true
 
   def load_rake_as_lib
     Dir.chdir(Chef::Config.find_chef_repo_path(__FILE__))
     if Rake.application.tasks.empty?
       Rake.application.init
-      Rake.application.options.rakefile = 'config/tasks.rb'
       Rake.application.load_rakefile
     end
   end
@@ -21,6 +52,11 @@ module KnifeTask
     deps do
       require 'rake'
     end
+
+    option :trace,
+           short: '-t',
+           long: '--trace=[OUT]',
+           description: "Turn on invoke/execute tracing, enable full backtrace. OUT can be stderr (default) or stdout."
 
     def run
       load_rake_as_lib
