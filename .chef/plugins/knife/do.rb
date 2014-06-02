@@ -5,11 +5,11 @@ require 'rake'
 module Rake
   class << self
     def application
-      @application ||= CustomRakeApp.new
+      @application ||= CustomApplication.new
     end
   end
 
-  class CustomRakeApp < Rake::Application
+  class CustomApplication < Application
     DEFAULT_RAKEFILES = ['config/tasks.rb'].freeze
 
     def initialize
@@ -32,7 +32,7 @@ module Rake
   end
 end
 
-module KnifeTask
+module KnifeTasks
   include Rake
 
   Rake::TaskManager.record_task_metadata = true
@@ -46,7 +46,7 @@ module KnifeTask
   end
 
   class Do < Chef::Knife
-    include KnifeTask
+    include KnifeTasks
     banner 'knife do (options)'
 
     deps do
@@ -65,7 +65,7 @@ module KnifeTask
   end
 
   class DoTask < Chef::Knife
-    include KnifeTask
+    include KnifeTasks
     banner 'knife do task (options)'
 
     deps do
