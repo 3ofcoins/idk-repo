@@ -60,7 +60,7 @@ module KnifeTasks
 
     def run
       load_rake_as_lib
-      Rake.application.tasks.each { |t| p "#{t.name} # #{t.comment}" }
+      Rake.application.tasks.each { |t| p "rake #{t.name} # #{t.comment}" }
     end
   end
 
@@ -164,7 +164,7 @@ module KnifeTasks
       if ARGV.drop(2).empty?
         Rake::Task[:default].invoke
       else
-        ARGV.drop(2).each { |t| Rake::Task[t].invoke }
+        ARGV.drop(2).each { |t| Rake.application.invoke_task(t) }
       end
     end
   end
